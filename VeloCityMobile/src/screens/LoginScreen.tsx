@@ -12,10 +12,13 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { loginSchema } from '../utils/authSchema';
 import Logo from '../assets/logo.png';
+import { useAuthStore } from '../store/useAuthStore';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen = ({ navigation }: Props) => {
+
+  const signIn = useAuthStore(state => state.signIn);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -26,6 +29,8 @@ const LoginScreen = ({ navigation }: Props) => {
     const result = loginSchema.safeParse(formData);
     if (result.success) {
       console.log('Validation Successful', result.data);
+      // @TODO connect API
+      signIn("Piotr", "Test");
     } else {
       console.log('Validation Error', result.error.flatten());
     }
