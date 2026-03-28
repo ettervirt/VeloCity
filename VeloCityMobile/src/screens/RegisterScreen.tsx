@@ -10,20 +10,22 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from '../navigation/types';
-import { loginSchema } from '../utils/authSchema';
+import { registerSchema } from '../utils/registerSchema';
 import Logo from '../assets/logo.png';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
-
-const LoginScreen = ({ navigation }: Props) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
+const RegisterScreen = ({ navigation }: Props) => {
 
   const [formData, setFormData] = useState({
+    name: '',
+    surname: '',
     email: '',
     password: '',
+    password_confirmation: '',
   });
 
   const handleLogin = () => {
-    const result = loginSchema.safeParse(formData);
+    const result = registerSchema.safeParse(formData);
     if (result.success) {
       console.log('Validation Successful', result.data);
     } else {
@@ -36,9 +38,25 @@ const LoginScreen = ({ navigation }: Props) => {
         <View style={styles.logoContainer}>
           <Image source={Logo} style={styles.logo} resizeMode="contain" />
           <Text style={styles.brandName}>VeloCity</Text>
-          <Text style={styles.subtitle}>System Zarządzania Transportem</Text>
+          <Text style={styles.subtitle}>Rejestracja</Text>
         </View>
         <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="Imię"
+            placeholderTextColor="#666"
+            value={formData.name}
+            onChangeText={text => setFormData({ ...formData, name: text })}
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Nazwisko"
+            placeholderTextColor="#666"
+            value={formData.surname}
+            onChangeText={text => setFormData({ ...formData, surname: text })}
+            autoCapitalize="none"
+          />
           <TextInput
             style={styles.input}
             placeholder="E-mail / Login"
@@ -56,14 +74,22 @@ const LoginScreen = ({ navigation }: Props) => {
             onChangeText={text => setFormData({ ...formData, password: text })}
             secureTextEntry
           />
+          <TextInput
+            style={styles.input}
+            placeholder="Powtórz hasło"
+            placeholderTextColor="#666"
+            value={formData.password_confirmation}
+            onChangeText={text => setFormData({ ...formData, password_confirmation: text })}
+            secureTextEntry
+          />
 
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Zaloguj się</Text>
+            <Text style={styles.buttonText}>Zarejestruj się</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.footerText}>Nie masz konta? Zarejestruj się</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.footerText}>Masz konto? Zaloguj się</Text>
         </TouchableOpacity>
       </View>
   );
@@ -138,4 +164,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default RegisterScreen;

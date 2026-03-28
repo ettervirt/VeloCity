@@ -7,6 +7,7 @@ import {
 
 import { RootStackParamList } from './types';
 import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -16,9 +17,12 @@ function RootNavigator(): React.JSX.Element {
     <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isLoggedIn ? (
-            null
+            <></>
         ) : (
-          <Stack.Screen name="Login" component={LoginScreen} />
+            <>
+                <Stack.Screen name="Login" component={LoginScreen} />
+                <Stack.Screen name="Register" component={RegisterScreen} />
+            </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
