@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:18.3
+    container_name: velocity_db
+    restart: always
+    environment:
+      - POSTGRES_USER=velocity
+      - POSTGRES_PASSWORD=SilneHaslo123
+      - POSTGRES_DB=VeloCity
+    ports:
+      - "5432:5432"
+    volumes:
+      - velocity_data:/var/lib/postgresql
+
+volumes:
+  velocity_data:
