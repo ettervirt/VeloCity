@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using VeloCity.Api.Features.Users.Commands.GetProfile;
 using VeloCity.Api.Features.Users.Commands.Login;
 using VeloCity.Api.Features.Users.Commands.CreateUser;
+using VeloCity.Api.Features.Users.Commands.GetBalance;
 
 namespace VeloCity.Api.Controllers;
 
@@ -18,7 +19,7 @@ public class UsersController(
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status201Created)]
     public async Task<IActionResult> Login([FromBody] LoginCommand command)
     {
-        var response = await mediator.Send(command);
+        LoginResponse? response = await mediator.Send(command);
 
         if (response == null)
             return Unauthorized(new
@@ -49,8 +50,29 @@ public class UsersController(
     [ProducesResponseType(typeof(ProfileDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetProfile()
     {
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var profile = await mediator.Send(new GetProfileQuery(userId));
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        ProfileDto? profile = await mediator.Send(new GetProfileQuery(userId));
+        if (profile == null)
+            return Unauthorized(new
+            {
+                message = "User don't exist"
+            });
         return Ok(profile);
+    }
+
+    // get user Balance
+    [Authorize]
+    [HttpGet("balance")]
+    [ProducesResponseType(typeof(BalanceDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetBalance()
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        BalanceDto? balance = await mediator.Send(new GetBalanceQuery(userId));
+        if (balance == null)
+            return Unauthorized(new
+            {
+                message = "User don't exist"
+            });
+        return Ok(balance);
     }
 }
