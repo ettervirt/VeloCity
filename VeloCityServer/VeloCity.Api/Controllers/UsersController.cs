@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using VeloCity.Api.Common.DTOs;
 using VeloCity.Api.Features.Users.Commands.Login;
 using VeloCity.Api.Features.Users.Commands.CreateUser;
+using VeloCity.Api.Features.Users.Commands.DeleteOwnAccount;
+using VeloCity.Api.Features.Users.Commands.DeleteUser;
 using VeloCity.Api.Features.Users.Commands.TopUpBalance;
 using VeloCity.Api.Features.Users.Queries.GetBalance;
 using VeloCity.Api.Features.Users.Queries.GetProfile;
@@ -77,7 +79,30 @@ public class UsersController(
     public async Task<IActionResult> TopUp([FromBody] TopUpBalanceCommand command)
     {
         var newBalance = await mediator.Send(command);
-
         return Ok(newBalance);
+    }
+
+    // self delete user
+    [Authorize]
+    [HttpDelete("me")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteMe()
+    {
+        await mediator.Send(new DeleteOwnAccountCommand());
+        return NoContent();
+    }
+
+    // ADMIN ONLY: delete user
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        await mediator.Send(new DeleteUserCommand(id));
+        return NoContent();
     }
 }
