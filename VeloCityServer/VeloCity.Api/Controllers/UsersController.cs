@@ -2,10 +2,12 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using VeloCity.Api.Features.Users.Commands.GetProfile;
+using VeloCity.Api.Common.DTOs;
 using VeloCity.Api.Features.Users.Commands.Login;
 using VeloCity.Api.Features.Users.Commands.CreateUser;
-using VeloCity.Api.Features.Users.Commands.GetBalance;
+using VeloCity.Api.Features.Users.Commands.TopUpBalance;
+using VeloCity.Api.Features.Users.Queries.GetBalance;
+using VeloCity.Api.Features.Users.Queries.GetProfile;
 
 namespace VeloCity.Api.Controllers;
 
@@ -33,6 +35,7 @@ public class UsersController(
     // register
     [HttpPost("register")]
     [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateUserCommand command)
     {
         var userId = await mediator.Send(command);
@@ -48,15 +51,10 @@ public class UsersController(
     [Authorize]
     [HttpGet("profile")]
     [ProducesResponseType(typeof(ProfileDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetProfile()
     {
-        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        ProfileDto? profile = await mediator.Send(new GetProfileQuery(userId));
-        if (profile == null)
-            return Unauthorized(new
-            {
-                message = "User don't exist"
-            });
+        var profile = await mediator.Send(new GetProfileQuery());
         return Ok(profile);
     }
 
@@ -64,15 +62,22 @@ public class UsersController(
     [Authorize]
     [HttpGet("balance")]
     [ProducesResponseType(typeof(BalanceDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetBalance()
     {
-        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        BalanceDto? balance = await mediator.Send(new GetBalanceQuery(userId));
-        if (balance == null)
-            return Unauthorized(new
-            {
-                message = "User don't exist"
-            });
+        BalanceDto? balance = await mediator.Send(new GetBalanceQuery());
         return Ok(balance);
+    }
+
+    // topup user Balance
+    [HttpPost("balance/topup")]
+    [Authorize]
+    [ProducesResponseType(typeof(BalanceDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> TopUp([FromBody] TopUpBalanceCommand command)
+    {
+        var newBalance = await mediator.Send(command);
+
+        return Ok(newBalance);
     }
 }

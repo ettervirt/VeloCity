@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using VeloCity.Api.Common.Exceptions;
 using VeloCity.Api.Models;
 using VeloCity.Api.Models.Data;
 using VeloCity.Api.Models.Enums;
@@ -12,7 +13,7 @@ public class CreateUserHandler(ApplicationDbContext context) : IRequestHandler<C
     {
         bool emailExist = await context.Users.AnyAsync(u => u.Email == request.Email, ct);
         if (emailExist)
-            throw new InvalidOperationException("Email already exists");
+            throw new AppException("Email already exists", 400);
 
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 

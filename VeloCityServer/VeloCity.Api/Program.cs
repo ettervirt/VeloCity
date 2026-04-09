@@ -1,8 +1,14 @@
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using VeloCity.Api.Common.Interfaces;
+
+using VeloCity.Api.Infrastructure.Behaviors;
+using VeloCity.Api.Infrastructure.Identity;
+using VeloCity.Api.Infrastructure.Middleware;
 using VeloCity.Api.Models.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -79,7 +85,23 @@ builder.Services.AddRouting(options =>
     options.LowercaseUrls = true;
 });
 
-var app = builder.Build();
+// user service
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContext, UserContext>();
+
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+WebApplication app = builder.Build();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
