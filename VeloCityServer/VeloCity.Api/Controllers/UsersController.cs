@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VeloCity.Api.Common.DTOs;
+using VeloCity.Api.Common.Pagination;
 using VeloCity.Api.Features.Users.Commands.ChangePassword;
 using VeloCity.Api.Features.Users.Commands.Login;
 using VeloCity.Api.Features.Users.Commands.CreateUser;
@@ -12,6 +13,7 @@ using VeloCity.Api.Features.Users.Commands.TopUpBalance;
 using VeloCity.Api.Features.Users.Commands.UpdateProfile;
 using VeloCity.Api.Features.Users.Queries.GetBalance;
 using VeloCity.Api.Features.Users.Queries.GetProfile;
+using VeloCity.Api.Features.Users.Queries.GetUsers;
 
 namespace VeloCity.Api.Controllers;
 
@@ -127,5 +129,16 @@ public class UsersController(
     {
         await mediator.Send(new DeleteUserCommand(id));
         return NoContent();
+    }
+
+    // ADMIN ONLY: get all user
+    [Authorize(Roles = "Admin")]
+    [HttpGet]
+    [ProducesResponseType(typeof(PaginatedList<UserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetUsers([FromQuery] GetUsersQuery query)
+    {
+        var result = await mediator.Send(query);
+        return Ok(result);
     }
 }
