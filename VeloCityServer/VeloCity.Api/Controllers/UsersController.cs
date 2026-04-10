@@ -3,11 +3,13 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VeloCity.Api.Common.DTOs;
+using VeloCity.Api.Features.Users.Commands.ChangePassword;
 using VeloCity.Api.Features.Users.Commands.Login;
 using VeloCity.Api.Features.Users.Commands.CreateUser;
 using VeloCity.Api.Features.Users.Commands.DeleteOwnAccount;
 using VeloCity.Api.Features.Users.Commands.DeleteUser;
 using VeloCity.Api.Features.Users.Commands.TopUpBalance;
+using VeloCity.Api.Features.Users.Commands.UpdateProfile;
 using VeloCity.Api.Features.Users.Queries.GetBalance;
 using VeloCity.Api.Features.Users.Queries.GetProfile;
 
@@ -91,6 +93,27 @@ public class UsersController(
     public async Task<IActionResult> DeleteMe()
     {
         await mediator.Send(new DeleteOwnAccountCommand());
+        return NoContent();
+    }
+
+    // update my user
+    [Authorize]
+    [HttpPut("me")]
+    [ProducesResponseType(typeof(ProfileDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileCommand command)
+    {
+        var updatedProfile = await mediator.Send(command);
+        return Ok(updatedProfile);
+    }
+
+    // update my password
+    [Authorize]
+    [HttpPut("me/password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+    {
+        await mediator.Send(command);
         return NoContent();
     }
 
