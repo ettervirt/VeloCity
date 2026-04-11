@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +10,11 @@ using VeloCity.Api.Features.Users.Commands.DeleteOwnAccount;
 using VeloCity.Api.Features.Users.Commands.DeleteUser;
 using VeloCity.Api.Features.Users.Commands.TopUpBalance;
 using VeloCity.Api.Features.Users.Commands.UpdateProfile;
+using VeloCity.Api.Features.Users.Commands.UpdateUserStatus;
 using VeloCity.Api.Features.Users.Queries.GetBalance;
 using VeloCity.Api.Features.Users.Queries.GetProfile;
 using VeloCity.Api.Features.Users.Queries.GetUsers;
+using VeloCity.Api.Models.Enums;
 
 namespace VeloCity.Api.Controllers;
 
@@ -120,7 +121,7 @@ public class UsersController(
     }
 
     // ADMIN ONLY: delete user
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -132,7 +133,7 @@ public class UsersController(
     }
 
     // ADMIN ONLY: get all user
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpGet]
     [ProducesResponseType(typeof(PaginatedList<UserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -140,5 +141,16 @@ public class UsersController(
     {
         var result = await mediator.Send(query);
         return Ok(result);
+    }
+
+    // ADMIN ONLY: update user role
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    [HttpPut("{id}/status")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateUserStatus(int id, [FromBody] UpdateStatusRequest body)
+    {
+        var command = new UpdateUserStatusCommand(id, body.Role, body.IsActive);
+        await mediator.Send(command);
+        return NoContent();
     }
 }
