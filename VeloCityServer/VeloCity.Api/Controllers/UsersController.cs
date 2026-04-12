@@ -13,6 +13,7 @@ using VeloCity.Api.Features.Users.Commands.UpdateProfile;
 using VeloCity.Api.Features.Users.Commands.UpdateUserStatus;
 using VeloCity.Api.Features.Users.Queries.GetBalance;
 using VeloCity.Api.Features.Users.Queries.GetProfile;
+using VeloCity.Api.Features.Users.Queries.GetUserDetails;
 using VeloCity.Api.Features.Users.Queries.GetUsers;
 using VeloCity.Api.Models.Enums;
 
@@ -140,6 +141,17 @@ public class UsersController(
     public async Task<IActionResult> GetUsers([FromQuery] GetUsersQuery query)
     {
         var result = await mediator.Send(query);
+        return Ok(result);
+    }
+
+    // ADMIN ONLY: get user details
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(UserDetailsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetUserDetails(int id)
+    {
+        var result = await mediator.Send(new GetUserDetailsQuery(id));
         return Ok(result);
     }
 

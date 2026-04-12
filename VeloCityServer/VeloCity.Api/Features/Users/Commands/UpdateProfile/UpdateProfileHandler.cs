@@ -20,6 +20,6 @@ public class UpdateProfileHandler(ApplicationDbContext context, IUserContext use
 
         await context.SaveChangesAsync(ct);
 
-        return new ProfileDto(user.Name, user.Surname, user.Email, user.Role.ToString());
+        return new ProfileDto(user.Name, user.Surname, user.Email, user.Role);
     }
 }

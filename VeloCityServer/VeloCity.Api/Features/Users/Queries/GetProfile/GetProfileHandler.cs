@@ -18,6 +18,6 @@ public class GetProfileHandler(ApplicationDbContext context, IUserContext userCo
             throw new NotFoundException("User", userId);
         }
 
-        return new ProfileDto(user.Name, user.Surname, user.Email, user.Role.ToString());
+        return new ProfileDto(user.Name, user.Surname, user.Email, user.Role);
     }
 }
