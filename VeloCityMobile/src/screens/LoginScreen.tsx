@@ -13,6 +13,7 @@ import { RootStackParamList } from '../navigation/types';
 import { loginSchema } from '../utils/authSchema';
 import Logo from '../assets/logo.png';
 import { useAuthStore } from '../store/useAuthStore';
+import apiService from '../api/apiService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -25,12 +26,31 @@ const LoginScreen = ({ navigation }: Props) => {
     password: '',
   });
 
-  const handleLogin = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+const handleLogin = async () => {
     const result = loginSchema.safeParse(formData);
+
     if (result.success) {
-      console.log('Validation Successful', result.data);
-      // @TODO connect API
-      signIn("Piotr", "Test");
+      setIsLoading(true);
+      try {
+        const response = await apiService.login({
+          email: result.data.email,
+          password: result.data.password,
+        });
+
+        console.log('Sucesfull login', response);
+
+        signIn(
+          response.name ?? 'User',
+          response.token ?? ''
+        );
+
+      } catch (error) {
+        console.log('Login failed:', error);
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       console.log('Validation Error', result.error.flatten());
     }
