@@ -25,7 +25,7 @@ public class TicketsController(
 
     // ADMIN ONLY: delete ticket type
     [Authorize(Roles = nameof(UserRole.Admin))]
-    [HttpDelete("{id}")]
+    [HttpDelete("types/{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
