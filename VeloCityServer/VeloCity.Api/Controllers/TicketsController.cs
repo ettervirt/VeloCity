@@ -1,7 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VeloCity.Api.Features.Tickets.Commands.DeleteTicketType;
 using VeloCity.Api.Features.Tickets.Queries.GetActiveTicketTypes;
+using VeloCity.Api.Models.Enums;
 
 namespace VeloCity.Api.Controllers;
 
@@ -19,5 +21,17 @@ public class TicketsController(
     {
         var response = await mediator.Send(new GetActiveTicketTypesQuery());
         return Ok(response);
+    }
+
+    // ADMIN ONLY: delete ticket type
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteTicketType(int id)
+    {
+        await mediator.Send(new DeleteTicketTypeCommand(id));
+        return NoContent();
     }
 }
