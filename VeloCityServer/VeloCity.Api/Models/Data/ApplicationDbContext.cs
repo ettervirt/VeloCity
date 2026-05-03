@@ -13,6 +13,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<User> Users => Set<User>();
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<TicketType> TicketTypes => Set<TicketType>();
+    public DbSet<Payment> Payments => Set<Payment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,6 +49,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.Entity<Vehicle>()
             .HasIndex(v => v.SideNumber)
             .IsUnique();
+
+        modelBuilder.Entity<Payment>()
+            .HasIndex(p => p.TransactionId)
+            .IsUnique();
+
+        modelBuilder.Entity<Payment>()
+            .HasCheckConstraint("CK_Payment_PaymentMethod", "\"PaymentMethod\" IN (0, 1, 2)");
 
         SeedUserData(modelBuilder);
         SeedEconomicData(modelBuilder);

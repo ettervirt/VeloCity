@@ -10,7 +10,7 @@ namespace VeloCity.Api.Features.Tickets.Commands.DeleteTicketType
         public async Task Handle(DeleteTicketTypeCommand request, CancellationToken ct)
         {
             var ticketType = await context.TicketTypes.FindAsync([request.Id], ct)
-                       ?? throw new NotFoundException("TicketType", request.Id);
+                           ?? throw new NotFoundException("TicketType", request.Id);
 
             if (!ticketType.IsActive)
             {

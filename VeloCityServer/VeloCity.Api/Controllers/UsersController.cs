@@ -66,28 +66,6 @@ public class UsersController(
         return Ok(profile);
     }
 
-    // get user Balance
-    [Authorize]
-    [HttpGet("balance")]
-    [ProducesResponseType(typeof(BalanceDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetBalance()
-    {
-        BalanceDto? balance = await mediator.Send(new GetBalanceQuery());
-        return Ok(balance);
-    }
-
-    // topup user Balance
-    [HttpPost("balance/topup")]
-    [Authorize]
-    [ProducesResponseType(typeof(BalanceDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> TopUp([FromBody] TopUpBalanceCommand command)
-    {
-        var newBalance = await mediator.Send(command);
-        return Ok(newBalance);
-    }
-
     // self delete user
     [Authorize]
     [HttpDelete("me")]
