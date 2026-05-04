@@ -81,7 +81,7 @@ namespace VeloCity.Api.Migrations
 
                     b.ToTable("Payments", t =>
                         {
-                            t.HasCheckConstraint("CK_Payment_PaymentMethod", "\"PaymentMethod\" IN (0, 1, 2)");
+                            t.HasCheckConstraint("CK_Payment_PaymentMethod", "\"PaymentMethod\" IN (1, 2, 3)");
                         });
                 });
 

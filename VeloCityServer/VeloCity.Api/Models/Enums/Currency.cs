@@ -1,9 +1,8 @@
-﻿namespace VeloCity.Api.Models.Enums
+﻿namespace VeloCity.Api.Models.Enums;
+
+public enum Currency
 {
-    public enum Currency
-    {
-        PLN = 1,
-        EUR = 2,
-        USD = 3
-    }
+    PLN = 1,
+    EUR = 2,
+    USD = 3
 }

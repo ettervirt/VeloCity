@@ -5,7 +5,7 @@
 namespace VeloCity.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class addPaymentMethodConstraint : Migration
+    public partial class AddPaymentMethodConstraint : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,7 @@ namespace VeloCity.Api.Migrations
             migrationBuilder.AddCheckConstraint(
                 name: "CK_Payment_PaymentMethod",
                 table: "Payments",
-                sql: "\"PaymentMethod\" IN (0, 1, 2)");
+                sql: "\"PaymentMethod\" IN (1, 2, 3)");
         }
 
         /// <inheritdoc />

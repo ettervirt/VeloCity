@@ -1,7 +1,6 @@
 using MediatR;
 using VeloCity.Api.Common.Exceptions;
 using VeloCity.Api.Common.Interfaces;
-using VeloCity.Api.Features.Users.Queries.GetBalance;
 using VeloCity.Api.Features.Users.Queries.GetPayment;
 using VeloCity.Api.Models;
 using VeloCity.Api.Models.Data;
@@ -16,11 +15,11 @@ public class TopUpBalanceHandler(ApplicationDbContext context, IUserContext user
     {
         int userId = userContext.Id ?? throw new AppException("Missing user id", StatusCodes.Status401Unauthorized);
         var user = await context.Users.FindAsync([userId], ct)
-                   ?? throw new AppException("User don't exist",400);
+                   ?? throw new AppException("User doesn't exist",400);
 
         user.Balance += request.Amount;
 
-        if(!Enum.TryParse<PaymentMethod>(request.PaymentMethod, true, out var validatedMethod))
+        if(!Enum.TryParse<PaymentMethod>(request.PaymentMethod.ToString(), true, out var validatedMethod) || !Enum.IsDefined(typeof(PaymentMethod), validatedMethod))
         {
             throw new AppException("Invalid payment method", 400);
         }
@@ -31,7 +30,7 @@ public class TopUpBalanceHandler(ApplicationDbContext context, IUserContext user
             Amount = request.Amount,
             Currency = Currency.PLN,
             PaymentMethod = validatedMethod,
-            TransactionId = $"TNX-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..8].ToUpper()}",
+            TransactionId = $"TNX-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..8].ToUpperInvariant()}",
             Status = PaymentStatus.Completed,
             CreatedAt = DateTime.UtcNow
         };

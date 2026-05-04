@@ -1,9 +1,8 @@
-﻿namespace VeloCity.Api.Models.Enums
+﻿namespace VeloCity.Api.Models.Enums;
+
+public enum PaymentMethod
 {
-    public enum PaymentMethod
-    {
-        Card = 1,
-        PayPal = 2,
-        Giftcard = 3
-    }
+    Card = 1,
+    PayPal = 2,
+    Giftcard = 3
 }

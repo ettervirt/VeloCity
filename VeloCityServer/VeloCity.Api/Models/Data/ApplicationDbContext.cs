@@ -27,6 +27,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .Property(tt => tt.Price)
             .HasPrecision(18, 2);
 
+        modelBuilder.Entity<Payment>()
+            .Property(p => p.Amount)
+            .HasPrecision(18, 2);
+
         modelBuilder.Entity<Stop>()
             .HasIndex(s => s.ExternalId)
             .IsUnique();
@@ -55,7 +59,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .IsUnique();
 
         modelBuilder.Entity<Payment>()
-            .HasCheckConstraint("CK_Payment_PaymentMethod", "\"PaymentMethod\" IN (0, 1, 2)");
+            .HasCheckConstraint("CK_Payment_PaymentMethod", "\"PaymentMethod\" IN (1, 2, 3)");
 
         SeedUserData(modelBuilder);
         SeedEconomicData(modelBuilder);

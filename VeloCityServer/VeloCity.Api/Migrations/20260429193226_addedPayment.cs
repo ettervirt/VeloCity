@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace VeloCity.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class addedPayment : Migration
+    public partial class AddedPayment : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
