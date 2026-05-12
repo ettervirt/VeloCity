@@ -13,7 +13,7 @@ namespace VeloCity.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260503181000_addPaymentMethodConstraint")]
-    partial class addPaymentMethodConstraint
+    partial class AddPaymentMethodConstraint
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

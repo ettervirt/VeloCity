@@ -13,7 +13,7 @@ namespace VeloCity.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260429193226_addedPayment")]
-    partial class addedPayment
+    partial class AddedPayment
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
