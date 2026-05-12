@@ -1,12 +1,12 @@
-using System.Text;
-using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using System.Text;
+using System.Text.Json.Serialization;
 using VeloCity.Api.Common.Interfaces;
-
+using VeloCity.Api.Common.Services.Currency;
 using VeloCity.Api.Infrastructure.Behaviors;
 using VeloCity.Api.Infrastructure.Identity;
 using VeloCity.Api.Infrastructure.Middleware;
@@ -105,6 +105,9 @@ builder.Services.AddControllers()
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+
+builder.Services.AddScoped<ICurrencyService, CurrencyService>();
+builder.Services.AddHttpClient<ICurrencyService, CurrencyService>();
 
 WebApplication app = builder.Build();
 

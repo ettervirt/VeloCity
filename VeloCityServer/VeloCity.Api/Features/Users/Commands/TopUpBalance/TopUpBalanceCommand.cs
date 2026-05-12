@@ -4,4 +4,4 @@ using VeloCity.Api.Models.Enums;
 
 namespace VeloCity.Api.Features.Users.Commands.TopUpBalance;
 
-public record TopUpBalanceCommand(decimal Amount, PaymentMethod PaymentMethod) : IRequest<PaymentDto>;
+public record TopUpBalanceCommand(decimal Amount, PaymentMethod PaymentMethod, Currency Currency) : IRequest<PaymentDto>;

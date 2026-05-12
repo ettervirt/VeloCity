@@ -20,6 +20,6 @@ ApplicationDbContext context, IUserContext userContext) : IRequestHandler<GetPay
             throw new NotFoundException("Payment", request.Id);
         }
 
-        return new PaymentDto(payment.Amount, payment.Currency, payment.PaymentMethod, payment.TransactionId, payment.Status, payment.CreatedAt);
+        return new PaymentDto(payment.Amount, payment.ExchangeRate, payment.AmountInBaseCurrency, payment.Currency, payment.PaymentMethod, payment.TransactionId, payment.Status, payment.CreatedAt);
     }
 }
