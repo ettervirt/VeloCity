@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using VeloCity.Api.Features.Vehicles.Queries.GetVehicle;
+using VeloCity.Api.Common.DTOs;
 
 namespace VeloCity.Api.Features.Vehicles.Queries.GetVehicles;
 

@@ -1,18 +1,16 @@
 ﻿using FluentValidation;
-using VeloCity.Api.Features.Users.Commands.UpdateProfile;
 
-namespace VeloCity.Api.Features.Vehicles.Commands.CreateVehicle
+namespace VeloCity.Api.Features.Vehicles.Commands.CreateVehicle;
+
+public class CreateVehicleValidator : AbstractValidator<CreateVehicleCommand>
 {
-    public class CreateVehicleValidator : AbstractValidator<CreateVehicleCommand>
+    public CreateVehicleValidator()
     {
-        public CreateVehicleValidator()
-        {
-            RuleFor(x => x.SideNumber)
-                .NotEmpty().WithMessage("Side number is required")
-                .MaximumLength(50).WithMessage("Side number must not exceed 50 characters");
-            RuleFor(x => x.Model)
-                .NotEmpty().WithMessage("Model is required")
-                .MaximumLength(50).WithMessage("Model must not exceed 50 characters");
-        }
+        RuleFor(x => x.SideNumber)
+            .NotEmpty().WithMessage("Side number is required")
+            .MaximumLength(50).WithMessage("Side number must not exceed 50 characters");
+        RuleFor(x => x.Model)
+            .NotEmpty().WithMessage("Model is required")
+            .MaximumLength(50).WithMessage("Model must not exceed 50 characters");
     }
 }

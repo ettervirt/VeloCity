@@ -1,8 +1,6 @@
 ﻿using MediatR;
+using VeloCity.Api.Common.DTOs;
 
-namespace VeloCity.Api.Features.Vehicles.Queries.GetVehicle
-{
-    public record GetVehicleByIdQuery(int Id) : IRequest<VehicleDto?>;
+namespace VeloCity.Api.Features.Vehicles.Queries.GetVehicleById;
 
-    public record VehicleDto(int Id, string SideNumber, string Model, bool IsActive);
-}
+public record GetVehicleByIdQuery(int Id) : IRequest<VehicleDto?>;

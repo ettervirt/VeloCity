@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using VeloCity.Api.Common.Exceptions;
 using VeloCity.Api.Models.Data;
 
 namespace VeloCity.Api.Features.Vehicles.Commands.DeleteVehicle;
@@ -12,7 +13,7 @@ public class DeleteVehicleHandler(ApplicationDbContext context) : IRequestHandle
             .FirstOrDefaultAsync(v => v.Id == request.Id, ct);
 
         if (vehicle == null) return false;
-
+        if(vehicle.IsActive == false) throw new AppException("Vehicle not found", 400);
         // Soft delete
         vehicle.IsActive = false;
 

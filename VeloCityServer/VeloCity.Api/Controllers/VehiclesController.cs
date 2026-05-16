@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VeloCity.Api.Common.DTOs;
 using VeloCity.Api.Features.Vehicles.Commands.CreateVehicle;
 using VeloCity.Api.Features.Vehicles.Commands.DeleteVehicle;
 using VeloCity.Api.Features.Vehicles.Commands.UpdateVehicle;
-using VeloCity.Api.Features.Vehicles.Queries.GetVehicle;
+using VeloCity.Api.Features.Vehicles.Queries.GetVehicleById;
 using VeloCity.Api.Features.Vehicles.Queries.GetVehicles;
 using VeloCity.Api.Models.Enums;
 
@@ -63,7 +64,6 @@ public class VehiclesController(
 
         return NoContent();
     }
-    public record UpdateVehicleRequest(int Id, UpdateVehicleCommand Command) : IRequest<bool>;
 
     // ADMIN ONLY: delete vehicle by id
     [Authorize(Roles = nameof(UserRole.Admin))]

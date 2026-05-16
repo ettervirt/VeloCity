@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using VeloCity.Api.Features.Vehicles.Queries.GetVehicle;
+using VeloCity.Api.Common.DTOs;
 using VeloCity.Api.Models.Data;
 
 namespace VeloCity.Api.Features.Vehicles.Queries.GetVehicles;
