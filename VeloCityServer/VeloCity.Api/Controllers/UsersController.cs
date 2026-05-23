@@ -8,10 +8,8 @@ using VeloCity.Api.Features.Users.Commands.Login;
 using VeloCity.Api.Features.Users.Commands.CreateUser;
 using VeloCity.Api.Features.Users.Commands.DeleteOwnAccount;
 using VeloCity.Api.Features.Users.Commands.DeleteUser;
-using VeloCity.Api.Features.Users.Commands.TopUpBalance;
 using VeloCity.Api.Features.Users.Commands.UpdateProfile;
 using VeloCity.Api.Features.Users.Commands.UpdateUserStatus;
-using VeloCity.Api.Features.Users.Queries.GetBalance;
 using VeloCity.Api.Features.Users.Queries.GetProfile;
 using VeloCity.Api.Features.Users.Queries.GetUserDetails;
 using VeloCity.Api.Features.Users.Queries.GetUsers;
@@ -22,7 +20,8 @@ namespace VeloCity.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class UsersController(
-    IMediator mediator) : ControllerBase {
+    IMediator mediator) : ControllerBase
+{
 
     // login
     [HttpPost("login")]
@@ -64,28 +63,6 @@ public class UsersController(
     {
         var profile = await mediator.Send(new GetProfileQuery());
         return Ok(profile);
-    }
-
-    // get user Balance
-    [Authorize]
-    [HttpGet("balance")]
-    [ProducesResponseType(typeof(BalanceDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetBalance()
-    {
-        BalanceDto? balance = await mediator.Send(new GetBalanceQuery());
-        return Ok(balance);
-    }
-
-    // topup user Balance
-    [HttpPost("balance/topup")]
-    [Authorize]
-    [ProducesResponseType(typeof(BalanceDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> TopUp([FromBody] TopUpBalanceCommand command)
-    {
-        var newBalance = await mediator.Send(command);
-        return Ok(newBalance);
     }
 
     // self delete user

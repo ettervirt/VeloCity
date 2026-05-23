@@ -1,6 +1,7 @@
 namespace VeloCity.Api.Models;
 
-public class RouteStop {
+public class RouteStop
+{
     public int Id { get; set; }
     public int LineId { get; set; }
     public virtual Line Line { get; set; } = null!;
