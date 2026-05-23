@@ -1,4 +1,5 @@
 namespace VeloCity.Api.Models.Enums;
+
 public enum UserRole
 {
     Passenger = 1,

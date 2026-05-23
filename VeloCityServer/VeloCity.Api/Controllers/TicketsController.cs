@@ -11,7 +11,8 @@ namespace VeloCity.Api.Controllers;
 [Route("[controller]")]
 
 public class TicketsController(
-    IMediator mediator) : ControllerBase {
+    IMediator mediator) : ControllerBase
+{
 
     // tickets types
     [Authorize]

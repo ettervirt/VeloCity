@@ -4,7 +4,7 @@ using VeloCity.Api.Models.Data;
 
 namespace VeloCity.Api.Features.Tickets.Queries.GetActiveTicketTypes;
 
-public class GetActiveTicketTypesHandler(ApplicationDbContext context):
+public class GetActiveTicketTypesHandler(ApplicationDbContext context) :
     IRequestHandler<GetActiveTicketTypesQuery, List<TicketTypeDto>>
 {
     public async Task<List<TicketTypeDto>> Handle(GetActiveTicketTypesQuery request, CancellationToken ct)
