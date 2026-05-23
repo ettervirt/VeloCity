@@ -8,10 +8,8 @@ using VeloCity.Api.Features.Users.Commands.Login;
 using VeloCity.Api.Features.Users.Commands.CreateUser;
 using VeloCity.Api.Features.Users.Commands.DeleteOwnAccount;
 using VeloCity.Api.Features.Users.Commands.DeleteUser;
-using VeloCity.Api.Features.Users.Commands.TopUpBalance;
 using VeloCity.Api.Features.Users.Commands.UpdateProfile;
 using VeloCity.Api.Features.Users.Commands.UpdateUserStatus;
-using VeloCity.Api.Features.Users.Queries.GetBalance;
 using VeloCity.Api.Features.Users.Queries.GetProfile;
 using VeloCity.Api.Features.Users.Queries.GetUserDetails;
 using VeloCity.Api.Features.Users.Queries.GetUsers;
@@ -22,7 +20,8 @@ namespace VeloCity.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class UsersController(
-    IMediator mediator) : ControllerBase {
+    IMediator mediator) : ControllerBase
+{
 
     // login
     [HttpPost("login")]

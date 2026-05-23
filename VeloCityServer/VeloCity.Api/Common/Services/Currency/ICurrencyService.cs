@@ -1,4 +1,4 @@
-﻿namespace VeloCity.Api.Common.Services.Currency
+namespace VeloCity.Api.Common.Services.Currency
 {
     public interface ICurrencyService
     {

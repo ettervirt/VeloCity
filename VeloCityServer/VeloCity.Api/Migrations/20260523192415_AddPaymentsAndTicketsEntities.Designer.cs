@@ -12,8 +12,8 @@ using VeloCity.Api.Models.Data;
 namespace VeloCity.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260429193226_addedPayment")]
-    partial class AddedPayment
+    [Migration("20260523192415_AddPaymentsAndTicketsEntities")]
+    partial class AddPaymentsAndTicketsEntities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,10 @@ namespace VeloCity.Api.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("AmountInBaseCurrency")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("CreatedAt")
@@ -61,6 +65,9 @@ namespace VeloCity.Api.Migrations
 
                     b.Property<int>("Currency")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("ExchangeRate")
+                        .HasColumnType("numeric");
 
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
@@ -77,9 +84,43 @@ namespace VeloCity.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TransactionId")
+                        .IsUnique();
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", t =>
+                        {
+                            t.HasCheckConstraint("CK_Payment_PaymentMethod", "\"PaymentMethod\" IN (1, 2, 3)");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Amount = 20.00m,
+                            AmountInBaseCurrency = 20.00m,
+                            CreatedAt = new DateTime(2026, 5, 20, 10, 0, 0, 0, DateTimeKind.Utc),
+                            Currency = 1,
+                            ExchangeRate = 1.00m,
+                            PaymentMethod = 1,
+                            Status = 1,
+                            TransactionId = "TNX-20260520-A1B2C3D4",
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Amount = 30.00m,
+                            AmountInBaseCurrency = 30.00m,
+                            CreatedAt = new DateTime(2026, 5, 21, 14, 30, 0, 0, DateTimeKind.Utc),
+                            Currency = 1,
+                            ExchangeRate = 1.00m,
+                            PaymentMethod = 1,
+                            Status = 1,
+                            TransactionId = "TNX-20260521-E5F6G7H8",
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("VeloCity.Api.Models.RouteStop", b =>
@@ -447,6 +488,17 @@ namespace VeloCity.Api.Migrations
                             PasswordHash = "$2a$12$3s7iX0hZX00hn6JFwKJ06elVcg0A5mw9LVx4QHvaZW.Q3MWEyrPA2",
                             Role = 1,
                             Surname = "Bołoz"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Balance = 0.00m,
+                            Email = "dkflorek@student.wsb-nlu.edu.pl",
+                            IsActive = true,
+                            Name = "Dominik",
+                            PasswordHash = "$2a$12$3s7iX0hZX00hn6JFwKJ06elVcg0A5mw9LVx4QHvaZW.Q3MWEyrPA2",
+                            Role = 3,
+                            Surname = "Florek"
                         });
                 });
 

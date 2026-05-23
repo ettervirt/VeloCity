@@ -1,38 +1,46 @@
-﻿using System.Net.Http;
 using System.Text.Json;
 using VeloCity.Api.Common.Exceptions;
 
-namespace VeloCity.Api.Common.Services.Currency
+namespace VeloCity.Api.Common.Services.Currency;
+
+public class CurrencyService(HttpClient httpClient) : ICurrencyService
 {
-    public class CurrencyService(HttpClient httpClient) : ICurrencyService
+    private record NbpResponse(List<NbpRate> Rates);
+    private record NbpRate(decimal Mid);
+
+    public async Task<decimal> GetExchangeRateAsync(string currencyCode, CancellationToken ct)
     {
-        private record NbpResponse(List<NbpRate> Rates);
-        private record NbpRate(decimal Mid);
-        public async Task<decimal> GetExchangeRateAsync(string currencyCode, CancellationToken ct)
+        if (currencyCode.Equals("PLN", StringComparison.OrdinalIgnoreCase))
+            return 1.0m;
+
+        var url = $"https://api.nbp.pl/api/exchangerates/rates/a/{currencyCode}/?format=json";
+
+        try
         {
-            if (currencyCode.ToUpper() == "PLN") return 1.0m;
-            var url = $"https://api.nbp.pl/api/exchangerates/rates/a/{currencyCode}/?format=json";
+            var response = await httpClient.GetAsync(url, ct);
 
-            try
+            if (!response.IsSuccessStatusCode)
             {
-                var response = await httpClient.GetAsync(url, ct);
-
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception("Błąd podczas pobierania kursu z NBP.");
-
-                var content = await response.Content.ReadAsStringAsync(ct);
-
-                var data = JsonSerializer.Deserialize<NbpResponse>(content, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                return data?.Rates?[0].Mid ?? throw new Exception("Nie znaleziono kursu.");
+                throw new AppException($"Failed to fetch exchange rate for {currencyCode}.", 502);
             }
-            catch
+
+            var content = await response.Content.ReadAsStringAsync(ct);
+
+            var data = JsonSerializer.Deserialize<NbpResponse>(content, new JsonSerializerOptions
             {
-                throw new AppException("Usluga walutowa chwilowo niedostepna.");
-            }
+                PropertyNameCaseInsensitive = true
+            });
+
+            return data?.Rates?.FirstOrDefault()?.Mid
+                   ?? throw new AppException("Exchange rate not found in the response.", 502);
+        }
+        catch (AppException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            throw new AppException("Currency service is temporarily unavailable.", 503);
         }
     }
 }

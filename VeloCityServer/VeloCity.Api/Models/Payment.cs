@@ -1,4 +1,4 @@
-﻿using VeloCity.Api.Models.Enums;
+using VeloCity.Api.Models.Enums;
 
 namespace VeloCity.Api.Models;
 
@@ -15,5 +15,4 @@ public class Payment
     public string TransactionId { get; set; }
     public PaymentStatus Status { get; set; } = PaymentStatus.Completed;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
 }

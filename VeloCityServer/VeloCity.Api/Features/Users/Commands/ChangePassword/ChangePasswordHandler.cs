@@ -12,7 +12,7 @@ public class ChangePasswordHandler(ApplicationDbContext context, IUserContext us
     {
         int userId = userContext.Id ?? throw new AppException("Missing user id", StatusCodes.Status401Unauthorized);
         var user = await context.Users.FindAsync([userId], ct)
-                   ?? throw new AppException("User don't exist",400);
+                   ?? throw new AppException("User don't exist", 400);
 
 
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash);

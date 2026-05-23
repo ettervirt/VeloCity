@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using VeloCity.Api.Common.Exceptions;
 using VeloCity.Api.Models.Data;
 

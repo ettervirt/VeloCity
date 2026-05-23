@@ -2,14 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using VeloCity.Api.Models.Enums;
 
 namespace VeloCity.Api.Models.Data;
+
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
     public DbSet<Line> Lines => Set<Line>();
     public DbSet<Stop> Stops => Set<Stop>();
     public DbSet<RouteStop> RouteStops => Set<RouteStop>();
     public DbSet<Vehicle> Vehicles => Set<Vehicle>();
-
-
     public DbSet<User> Users => Set<User>();
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<TicketType> TicketTypes => Set<TicketType>();
@@ -64,9 +63,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         SeedUserData(modelBuilder);
         SeedEconomicData(modelBuilder);
         SeedVehiclesData(modelBuilder);
+        SeedPaymentsData(modelBuilder);
     }
 
-  private void SeedUserData(ModelBuilder modelBuilder)
+    private void SeedUserData(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().HasData(
             new User
@@ -88,6 +88,48 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 PasswordHash = "$2a$12$3s7iX0hZX00hn6JFwKJ06elVcg0A5mw9LVx4QHvaZW.Q3MWEyrPA2", //user123
                 Role = UserRole.Passenger,
                 Balance = 50.00m
+            },
+            new User
+            {
+                Id = 3,
+                Name = "Dominik",
+                Surname = "Florek",
+                Email = "dkflorek@student.wsb-nlu.edu.pl",
+                PasswordHash = "$2a$12$3s7iX0hZX00hn6JFwKJ06elVcg0A5mw9LVx4QHvaZW.Q3MWEyrPA2", //user123
+                Role = UserRole.Admin,
+                Balance = 0.00m
+            }
+        );
+    }
+
+    private void SeedPaymentsData(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Payment>().HasData(
+            new Payment
+            {
+                Id = 1,
+                UserId = 2,
+                Amount = 20.00m,
+                Currency = Currency.PLN,
+                ExchangeRate = 1.00m,
+                AmountInBaseCurrency = 20.00m,
+                PaymentMethod = PaymentMethod.Card,
+                TransactionId = "TNX-20260520-A1B2C3D4",
+                Status = PaymentStatus.Completed,
+                CreatedAt = new DateTime(2026, 5, 20, 10, 0, 0, DateTimeKind.Utc)
+            },
+            new Payment
+            {
+                Id = 2,
+                UserId = 2,
+                Amount = 30.00m,
+                Currency = Currency.PLN,
+                ExchangeRate = 1.00m,
+                AmountInBaseCurrency = 30.00m,
+                PaymentMethod = PaymentMethod.Card,
+                TransactionId = "TNX-20260521-E5F6G7H8",
+                Status = PaymentStatus.Completed,
+                CreatedAt = new DateTime(2026, 5, 21, 14, 30, 0, DateTimeKind.Utc)
             }
         );
     }

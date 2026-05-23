@@ -1,6 +1,7 @@
 namespace VeloCity.Api.Models;
 
-public class Ticket {
+public class Ticket
+{
     public int Id { get; set; }
     public int TicketTypeId { get; set; }
     public virtual TicketType TicketType { get; set; } = null!;

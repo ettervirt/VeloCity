@@ -1,4 +1,4 @@
-﻿namespace VeloCity.Api.Models.Enums;
+namespace VeloCity.Api.Models.Enums;
 
 public enum Currency
 {

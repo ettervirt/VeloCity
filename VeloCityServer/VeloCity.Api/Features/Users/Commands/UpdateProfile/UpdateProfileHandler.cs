@@ -13,7 +13,7 @@ public class UpdateProfileHandler(ApplicationDbContext context, IUserContext use
     {
         int userId = userContext.Id ?? throw new AppException("Missing user id", StatusCodes.Status401Unauthorized);
         var user = await context.Users.FindAsync([userId], ct)
-                   ?? throw new AppException("User don't exist",400);
+                   ?? throw new AppException("User don't exist", 400);
 
         user.Name = request.Name;
         user.Surname = request.Surname;
