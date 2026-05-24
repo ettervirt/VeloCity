@@ -10,7 +10,7 @@ using VeloCity.Api.Features.Payment.Queries.GetPaymentHistory;
 namespace VeloCity.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 [Authorize]
 public class PaymentsController(IMediator mediator) : ControllerBase
 {
