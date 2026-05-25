@@ -12,10 +12,10 @@ public class UpdateVehicleHandler(ApplicationDbContext context) : IRequestHandle
         var vehicle = await context.Vehicles
             .FirstOrDefaultAsync(v => v.Id == request.Id && v.IsActive, ct);
 
-        if (vehicle == null) return false;
+        if (vehicle is null) return false;
 
         var duplicateExists = await context.Vehicles
-        .AnyAsync(v => v.SideNumber == request.Command.SideNumber && v.Id != request.Id, ct);
+            .AnyAsync(v => v.SideNumber == request.Command.SideNumber && v.Id != request.Id, ct);
 
         if (duplicateExists)
         {

@@ -12,8 +12,8 @@ public class DeleteVehicleHandler(ApplicationDbContext context) : IRequestHandle
         var vehicle = await context.Vehicles
             .FirstOrDefaultAsync(v => v.Id == request.Id, ct);
 
-        if (vehicle == null) return false;
-        if(vehicle.IsActive == false) throw new AppException("Vehicle not found", 400);
+        if (vehicle is null) return false;
+        if (!vehicle.IsActive) throw new AppException("Vehicle not found", 400);
         // Soft delete
         vehicle.IsActive = false;
 

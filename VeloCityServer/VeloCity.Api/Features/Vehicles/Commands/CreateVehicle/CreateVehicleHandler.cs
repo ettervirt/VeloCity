@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using VeloCity.Api.Common.DTOs;
 using VeloCity.Api.Common.Exceptions;
+using VeloCity.Api.Features.Vehicles.DTOs;
 using VeloCity.Api.Models;
 using VeloCity.Api.Models.Data;
 
@@ -16,7 +16,7 @@ public class CreateVehicleHandler(ApplicationDbContext context)
             .AnyAsync(v => v.SideNumber == request.SideNumber, ct);
         if (duplicateExists)
         {
-            throw new AppException("This side number is already in use.", 400);
+            throw new AppException("This side number is already in use.", 403);
         }
         var vehicle = new Vehicle
         {

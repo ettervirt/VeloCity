@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using VeloCity.Api.Common.DTOs;
 using VeloCity.Api.Features.Vehicles.Commands.CreateVehicle;
 using VeloCity.Api.Features.Vehicles.Commands.DeleteVehicle;
 using VeloCity.Api.Features.Vehicles.Commands.UpdateVehicle;
+using VeloCity.Api.Features.Vehicles.DTOs;
 using VeloCity.Api.Features.Vehicles.Queries.GetVehicleById;
 using VeloCity.Api.Features.Vehicles.Queries.GetVehicles;
 using VeloCity.Api.Models.Enums;
@@ -18,7 +18,7 @@ public class VehiclesController(
 {
     // ADMIN ONLY: create
     [Authorize(Roles = nameof(UserRole.Admin))]
-    [HttpPost]
+    [HttpPost("create")]
     [ProducesResponseType(typeof(VehicleDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateVehicleCommand command)
     {
