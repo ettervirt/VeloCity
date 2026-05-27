@@ -10,12 +10,8 @@ public class UpdateStopHandler(
     public async Task Handle(UpdateStopCommand request,
         CancellationToken ct)
     {
-        var stop = await context.Stops.FindAsync([
-                           request.Id
-                       ],
-                       ct) ??
-                   throw new NotFoundException("Stop",
-                       request.Id);
+        var stop = await context.Stops.FindAsync([request.Id], ct)
+                   ?? throw new NotFoundException("Stop", request.Id);
 
         stop.Name = request.Name;
         stop.Latitude = request.Latitude;
