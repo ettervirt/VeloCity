@@ -5,10 +5,10 @@ using VeloCity.Api.Common.Pagination;
 using VeloCity.Api.Features.Lines.Commands.AddStop;
 using VeloCity.Api.Features.Lines.Commands.CreateLine;
 using VeloCity.Api.Features.Lines.Commands.DeleteLine;
-using VeloCity.Api.Features.Lines.Commands.DTOs;
 using VeloCity.Api.Features.Lines.Commands.RemoveStop;
 using VeloCity.Api.Features.Lines.Commands.UpdateLine;
 using VeloCity.Api.Features.Lines.Commands.UpdateSequence;
+using VeloCity.Api.Features.Lines.DTOs;
 using VeloCity.Api.Features.Lines.Queries.GetLineDetails;
 using VeloCity.Api.Features.Lines.Queries.GetLines;
 using VeloCity.Api.Models.Enums;
@@ -50,7 +50,7 @@ public class LinesController(IMediator mediator)
     // admin only, create
     [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpPost("create")]
-    [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(LineDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateLine([FromBody] CreateLineCommand command, CancellationToken ct)
     {
@@ -67,9 +67,7 @@ public class LinesController(IMediator mediator)
     public async Task<IActionResult> UpdateLine(int id, [FromBody] UpdateLineBody body, CancellationToken ct)
     {
         var command = new UpdateLineCommand(id, body.Name);
-        var success = await mediator.Send(command, ct);
-
-        if (success is null) return NotFound();
+        await mediator.Send(command, ct);
         return NoContent();
     }
 
@@ -115,7 +113,7 @@ public class LinesController(IMediator mediator)
 
     //admin only, update stop sequence
     [Authorize(Roles = nameof(UserRole.Admin))]
-    [HttpPut("{id:int}/sequence")]
+    [HttpPut("{id}/sequence")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateRouteSequence(int id, [FromBody] UpdateSequenceBody body, CancellationToken ct)

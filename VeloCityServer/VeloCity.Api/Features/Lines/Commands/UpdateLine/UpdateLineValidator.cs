@@ -1,14 +1,13 @@
 ﻿using FluentValidation;
 
-namespace VeloCity.Api.Features.Lines.Commands.UpdateLine
+namespace VeloCity.Api.Features.Lines.Commands.UpdateLine;
+
+public class UpdateLineValidator : AbstractValidator<UpdateLineCommand>
 {
-    public class UpdateLineValidator : AbstractValidator<UpdateLineCommand>
+    public UpdateLineValidator() 
     {
-        public UpdateLineValidator() 
-        {
-            RuleFor(x => x.Name)
-                .NotEmpty()
-                .MaximumLength(50);
-        }
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .MaximumLength(50);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using VeloCity.Api.Common.Pagination;
-using VeloCity.Api.Features.Lines.Commands.DTOs;
+using VeloCity.Api.Features.Lines.DTOs;
 
 namespace VeloCity.Api.Features.Lines.Queries.GetLines;
 

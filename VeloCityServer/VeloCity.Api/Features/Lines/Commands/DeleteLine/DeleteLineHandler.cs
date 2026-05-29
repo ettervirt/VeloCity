@@ -10,7 +10,7 @@ public class DeleteLineHandler(ApplicationDbContext context)
     public async Task<bool> Handle(DeleteLineCommand request, CancellationToken ct)
     {
         var line = await context.Lines
-            .FirstOrDefaultAsync(l => l.Id == request.Id, ct);
+            .FirstOrDefaultAsync(l => l.Id == request.Id && l.IsActive, ct);
         if (line is null) return false;
 
         line.IsActive = false;

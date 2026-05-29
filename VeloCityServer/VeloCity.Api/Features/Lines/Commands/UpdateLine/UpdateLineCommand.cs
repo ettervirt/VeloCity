@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using VeloCity.Api.Features.Lines.Commands.DTOs;
+using VeloCity.Api.Features.Lines.DTOs;
 
 namespace VeloCity.Api.Features.Lines.Commands.UpdateLine;
 

@@ -1,31 +1,39 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using VeloCity.Api.Common.Exceptions;
+using VeloCity.Api.Models;
 using VeloCity.Api.Models.Data;
 
-namespace VeloCity.Api.Features.Lines.Commands.UpdateSequence
+namespace VeloCity.Api.Features.Lines.Commands.UpdateSequence;
+
+public class UpdateSequenceHandler(ApplicationDbContext context) 
+    : IRequestHandler<UpdateSequenceCommand, bool>
 {
-    public class UpdateSequenceHandler(ApplicationDbContext context) 
-        : IRequestHandler<UpdateSequenceCommand, bool>
+    public async Task<bool> Handle(UpdateSequenceCommand request, CancellationToken ct)
     {
-        public async Task<bool> Handle(UpdateSequenceCommand request, CancellationToken ct)
+        var lineExists = await context.Lines.AnyAsync(l => l.Id == request.LineId && l.IsActive, ct);
+        if (!lineExists) throw new AppException("Line not found.", 404);
+
+        var currentStops = await context.RouteStops
+            .Where(rs => rs.LineId == request.LineId && rs.Direction == request.Direction)
+            .ToListAsync(ct);
+
+        context.RouteStops.RemoveRange(currentStops);
+
+        for (int i = 0; i < request.NewStopIds.Count; i++)
         {
-            var currentStops = await context.RouteStops
-                .Where(rs => rs.LineId == request.LineId && rs.Direction == request.Direction)
-                .ToListAsync(ct);
-
-            for (int i = 0; i < request.NewStopIds.Count; i++)
+            var newRouteStop = new RouteStop
             {
-                var targetStopId = request.NewStopIds[i];
-                var match = currentStops.FirstOrDefault(rs => rs.StopId == targetStopId);
+                LineId = request.LineId,
+                StopId = request.NewStopIds[i],
+                Direction = request.Direction,
+                Sequence = i + 1
+            };
 
-                if (match is not null)
-                {
-                    match.Sequence = i + 1;
-                }
-            }
-
-            await context.SaveChangesAsync(ct);
-            return true;
+            context.RouteStops.Add(newRouteStop);
         }
+
+        await context.SaveChangesAsync(ct);
+        return true;
     }
 }

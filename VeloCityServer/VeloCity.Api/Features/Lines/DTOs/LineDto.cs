@@ -1,4 +1,4 @@
-﻿namespace VeloCity.Api.Features.Lines.Commands.DTOs;
+﻿namespace VeloCity.Api.Features.Lines.DTOs;
 
 public record LineDto(
     int Id, 

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using VeloCity.Api.Common.Exceptions;
-using VeloCity.Api.Features.Lines.Commands.DTOs;
+using VeloCity.Api.Features.Lines.DTOs;
 using VeloCity.Api.Models;
 using VeloCity.Api.Models.Data;
 
