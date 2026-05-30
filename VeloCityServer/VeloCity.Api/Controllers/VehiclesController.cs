@@ -13,12 +13,11 @@ namespace VeloCity.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class VehiclesController(
-    IMediator mediator) : ControllerBase
+public class VehiclesController(IMediator mediator) : ControllerBase
 {
     // ADMIN ONLY: create
     [Authorize(Roles = nameof(UserRole.Admin))]
-    [HttpPost("create")]
+    [HttpPost()]
     [ProducesResponseType(typeof(VehicleDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateVehicleCommand command)
     {
@@ -34,8 +33,6 @@ public class VehiclesController(
     public async Task<IActionResult> GetById(int id)
     {
         var vehicle = await mediator.Send(new GetVehicleByIdQuery(id));
-        if (vehicle == null)
-            return NotFound(new { message = "Vehicle not found" });
         return Ok(vehicle);
     }
 
@@ -57,11 +54,10 @@ public class VehiclesController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateVehicleCommand command)
     {
-        var success = await mediator.Send(new UpdateVehicleRequest(id, command));
+        if (id != command.Id)
+            return BadRequest("ID mismatch.");
 
-        if (!success)
-            return NotFound(new { message = "Vehicle not found" });
-
+        await mediator.Send(command);
         return NoContent();
     }
 
@@ -72,12 +68,7 @@ public class VehiclesController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-        var success = await mediator.Send(new DeleteVehicleCommand(id));
-
-        if (!success)
-            return NotFound(new { message = "Vehicle not found" });
-
+        await mediator.Send(new DeleteVehicleCommand(id));
         return NoContent();
     }
 }
-

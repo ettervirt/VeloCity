@@ -13,5 +13,8 @@ public class UpdateVehicleValidator : AbstractValidator<UpdateVehicleCommand>
         RuleFor(x => x.Model)
             .NotEmpty().WithMessage("Model is required")
             .MaximumLength(50).WithMessage("Model must not exceed 50 characters");
+
+        RuleFor(x => x.Id)
+            .GreaterThan(0).WithMessage("Vehicle ID must be greater than zero.");
     }
 }

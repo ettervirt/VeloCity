@@ -5,27 +5,29 @@ using VeloCity.Api.Models.Data;
 
 namespace VeloCity.Api.Features.Vehicles.Commands.UpdateVehicle;
 
-public class UpdateVehicleHandler(ApplicationDbContext context) : IRequestHandler<UpdateVehicleRequest, bool>
+public class UpdateVehicleHandler(ApplicationDbContext context) : IRequestHandler<UpdateVehicleCommand>
 {
-    public async Task<bool> Handle(UpdateVehicleRequest request, CancellationToken ct)
+    public async Task Handle(UpdateVehicleCommand request, CancellationToken ct)
     {
-        var vehicle = await context.Vehicles
-            .FirstOrDefaultAsync(v => v.Id == request.Id && v.IsActive, ct);
+        var vehicle = await context.Vehicles.FindAsync([request.Id], ct)
+                      ?? throw new NotFoundException("Vehicle", request.Id);
 
-        if (vehicle is null) return false;
+        if (!vehicle.IsActive)
+        {
+            throw new AppException("Vehicle is inactive and cannot be updated.", 400);
+        }
 
         var duplicateExists = await context.Vehicles
-            .AnyAsync(v => v.SideNumber == request.Command.SideNumber && v.Id != request.Id, ct);
+            .AnyAsync(v => v.SideNumber == request.SideNumber && v.Id != request.Id, ct);
 
         if (duplicateExists)
         {
             throw new AppException("This side number is already in use.", 400);
         }
 
-        vehicle.SideNumber = request.Command.SideNumber;
-        vehicle.Model = request.Command.Model;
+        vehicle.SideNumber = request.SideNumber;
+        vehicle.Model = request.Model;
 
         await context.SaveChangesAsync(ct);
-        return true;
     }
 }
