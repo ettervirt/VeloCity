@@ -64,6 +64,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         SeedEconomicData(modelBuilder);
         SeedVehiclesData(modelBuilder);
         SeedPaymentsData(modelBuilder);
+        SeedTicketsData(modelBuilder);
     }
 
     private void SeedUserData(ModelBuilder modelBuilder)
@@ -188,6 +189,52 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
             new Vehicle { Id = 16, SideNumber = "601", Model = "Iveco Daily 70C", IsActive = true },
             new Vehicle { Id = 17, SideNumber = "602", Model = "Iveco Daily 70C", IsActive = true }
+        );
+    }
+    private void SeedTicketsData(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Ticket>().HasData(
+            // New Ticket
+            new Ticket
+            {
+                Id = 1,
+                UserId = 2,
+                TicketTypeId = 1, // Normalny - Miejski (4.00 PLN)
+                Price = 4.00m,
+                PurchasedAt = new DateTime(2026, 5, 30, 15, 0, 0, DateTimeKind.Utc),
+                IsValidated = false,
+                VehicleId = null,
+                ValidFrom = null,
+                ValidTo = null
+            },
+
+            // Active
+            new Ticket
+            {
+                Id = 2,
+                UserId = 2,
+                TicketTypeId = 13, // Przesiadkowy 60 min - Normalny (7.00 PLN)
+                Price = 7.00m,
+                PurchasedAt = new DateTime(2026, 5, 31, 18, 0, 0, DateTimeKind.Utc),
+                IsValidated = true,
+                VehicleId = 1, // Solaris Urbino 12 (101)
+                ValidFrom = new DateTime(2026, 5, 31, 18, 5, 0, DateTimeKind.Utc),
+                ValidTo = new DateTime(2026, 5, 31, 19, 5, 0, DateTimeKind.Utc)
+            },
+
+            // Expired
+            new Ticket
+            {
+                Id = 3,
+                UserId = 2,
+                TicketTypeId = 13, // Przesiadkowy 60 min - Normalny (7.00 PLN)
+                Price = 7.00m,
+                PurchasedAt = new DateTime(2026, 5, 25, 8, 0, 0, DateTimeKind.Utc),
+                IsValidated = true,
+                VehicleId = 8, // Mercedes-Benz Citaro (301)
+                ValidFrom = new DateTime(2026, 5, 25, 8, 10, 0, DateTimeKind.Utc),
+                ValidTo = new DateTime(2026, 5, 25, 9, 10, 0, DateTimeKind.Utc)
+            }
         );
     }
 }
