@@ -11,7 +11,9 @@ public class Ticket
     public bool IsValidated { get; set; } = false;
     public decimal Price { get; set; }
     public int UserId { get; set; }
-    public int StartStopId { get; set; }
+    public int? StartStopId { get; set; }
     public int? EndStopId { get; set; }
     public virtual User User { get; set; } = null!;
+    public int? VehicleId { get; set; }
+    public virtual Vehicle Vehicle { get; set; } = null!;
 }
