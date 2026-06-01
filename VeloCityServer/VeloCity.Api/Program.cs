@@ -114,12 +114,9 @@ WebApplication app = builder.Build();
 
 app.UseExceptionHandler();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("AllowAll");
 
