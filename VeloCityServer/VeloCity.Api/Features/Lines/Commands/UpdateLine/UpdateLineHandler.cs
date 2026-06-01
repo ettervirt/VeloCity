@@ -7,17 +7,17 @@ using VeloCity.Api.Models.Data;
 namespace VeloCity.Api.Features.Lines.Commands.UpdateLine;
 
 public class UpdateLineHandler(ApplicationDbContext context) 
-    : IRequestHandler<UpdateLineCommand, LineDto>
+    : IRequestHandler<UpdateLineCommand>
 {
-    public async Task<LineDto> Handle(UpdateLineCommand request, CancellationToken ct)
+    public async Task Handle(UpdateLineCommand request, CancellationToken ct)
     {
         var line = await context.Lines
             .FirstOrDefaultAsync(l => l.Id == request.Id && l.IsActive, ct);
 
-        if (line is null) throw new AppException("Line not found.", 404);
+        if (line is null) throw new NotFoundException("Line", request.Id);
 
         var duplicateExists = await context.Lines
-            .AnyAsync(l => l.Name.ToLower() == request.Name.ToLower()
+            .AnyAsync(l => EF.Functions.Like(l.Name, request.Name)
                         && l.Id != request.Id
                         && l.IsActive, ct);
 
@@ -29,6 +29,5 @@ public class UpdateLineHandler(ApplicationDbContext context)
         line.Name = request.Name;
 
         await context.SaveChangesAsync(ct);
-        return new LineDto(line.Id, line.Name, line.IsActive);
     }
 }

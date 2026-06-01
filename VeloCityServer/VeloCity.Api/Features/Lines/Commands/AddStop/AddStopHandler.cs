@@ -7,16 +7,16 @@ using VeloCity.Api.Models.Data;
 namespace VeloCity.Api.Features.Lines.Commands.AddStop;
 
 public class AddStopHandler(ApplicationDbContext context) 
-    : IRequestHandler<AddStopCommand, bool>
+    : IRequestHandler<AddStopCommand>
 {
-    public async Task<bool> Handle(AddStopCommand request, CancellationToken ct)
+    public async Task Handle(AddStopCommand request, CancellationToken ct)
     {
         var lineExists = await context.Lines
             .AnyAsync(l => l.Id == request.LineId && l.IsActive, ct);
 
         if (!lineExists)
         {
-            throw new AppException($"Linia o ID {request.LineId} nie istnieje.", 404);
+            throw new NotFoundException("Line", request.LineId);
         }
 
         var stopExists = await context.Stops
@@ -24,7 +24,7 @@ public class AddStopHandler(ApplicationDbContext context)
 
         if (!stopExists)
         {
-            throw new AppException($"Przystanek o ID {request.StopId} nie istnieje w systemie.", 404);
+            throw new NotFoundException("Stop", request.StopId);
         }
 
         var lastSequence = await context.RouteStops
@@ -42,6 +42,5 @@ public class AddStopHandler(ApplicationDbContext context)
 
         context.RouteStops.Add(routeStop);
         await context.SaveChangesAsync(ct);
-        return true;
     }
 }

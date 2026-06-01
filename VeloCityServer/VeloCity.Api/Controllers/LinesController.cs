@@ -75,11 +75,9 @@ public class LinesController(IMediator mediator)
     [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteLine(int id, CancellationToken ct)
     {
-        var success = await mediator.Send(new DeleteLineCommand(id), ct);
-        if (!success) return NotFound();
+        await mediator.Send(new DeleteLineCommand(id), ct);
         return NoContent();
     }
 
@@ -87,13 +85,10 @@ public class LinesController(IMediator mediator)
     [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpPost("{id}/stops")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddStopToRoute(int id, [FromBody] AddStopBody body, CancellationToken ct)
     {
         var command = new AddStopCommand(id, body.StopId, body.Direction);
-        var success = await mediator.Send(command, ct);
-
-        if (!success) return BadRequest();
+        await mediator.Send(command, ct);
         return NoContent();
     }
 
@@ -101,13 +96,11 @@ public class LinesController(IMediator mediator)
     [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpDelete("{id}/stops/{stopId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveStopFromRoute(int id, int stopId, [FromQuery] int direction, CancellationToken ct)
     {
         var command = new RemoveStopCommand(id, stopId, direction);
-        var success = await mediator.Send(command, ct);
+        await mediator.Send(command, ct);
 
-        if (!success) return NotFound();
         return NoContent();
     }
 
@@ -115,13 +108,11 @@ public class LinesController(IMediator mediator)
     [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpPut("{id}/sequence")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateRouteSequence(int id, [FromBody] UpdateSequenceBody body, CancellationToken ct)
     {
         var command = new UpdateSequenceCommand(id, body.Direction, body.NewStopIds);
-        var success = await mediator.Send(command, ct);
+        await mediator.Send(command, ct);
 
-        if (!success) return BadRequest();
         return NoContent();
     }
 }

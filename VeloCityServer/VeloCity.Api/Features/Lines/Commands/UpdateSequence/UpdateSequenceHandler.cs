@@ -7,33 +7,27 @@ using VeloCity.Api.Models.Data;
 namespace VeloCity.Api.Features.Lines.Commands.UpdateSequence;
 
 public class UpdateSequenceHandler(ApplicationDbContext context) 
-    : IRequestHandler<UpdateSequenceCommand, bool>
+    : IRequestHandler<UpdateSequenceCommand>
 {
-    public async Task<bool> Handle(UpdateSequenceCommand request, CancellationToken ct)
+    public async Task Handle(UpdateSequenceCommand request, CancellationToken ct)
     {
         var lineExists = await context.Lines.AnyAsync(l => l.Id == request.LineId && l.IsActive, ct);
-        if (!lineExists) throw new AppException("Line not found.", 404);
+        if (!lineExists) throw new NotFoundException("Line", request.LineId);
 
         var currentStops = await context.RouteStops
             .Where(rs => rs.LineId == request.LineId && rs.Direction == request.Direction)
+            .OrderBy(rs => rs.Sequence)
             .ToListAsync(ct);
 
-        context.RouteStops.RemoveRange(currentStops);
+        if(currentStops.Count != request.NewStopIds.Count)
+            throw new ArgumentException("The number of new stop IDs must match the current number of stops in the line.");
 
-        for (int i = 0; i < request.NewStopIds.Count; i++)
+        for (int i = 0; i < currentStops.Count; i++)
         {
-            var newRouteStop = new RouteStop
-            {
-                LineId = request.LineId,
-                StopId = request.NewStopIds[i],
-                Direction = request.Direction,
-                Sequence = i + 1
-            };
-
-            context.RouteStops.Add(newRouteStop);
+            currentStops[i].StopId = request.NewStopIds[i];
+            currentStops[i].Sequence = i + 1;
         }
 
         await context.SaveChangesAsync(ct);
-        return true;
     }
 }

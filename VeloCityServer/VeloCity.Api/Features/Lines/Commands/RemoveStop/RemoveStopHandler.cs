@@ -1,37 +1,34 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using VeloCity.Api.Common.Exceptions;
 using VeloCity.Api.Models.Data;
 
 namespace VeloCity.Api.Features.Lines.Commands.RemoveStop;
 
 public class RemoveStopHandler(ApplicationDbContext context) 
-    : IRequestHandler<RemoveStopCommand, bool>
+    : IRequestHandler<RemoveStopCommand>
 {
-    public async Task<bool> Handle(RemoveStopCommand request, CancellationToken ct)
+    public async Task Handle(RemoveStopCommand request, CancellationToken ct)
     {
         var stopToRemove = await context.RouteStops
-            .FirstOrDefaultAsync(rs => rs.LineId == request.LineId
-                                && rs.StopId == request.StopId
-                                && rs.Direction == request.Direction, ct);
+            .FirstOrDefaultAsync(rs => rs.Id == request.RouteStopId, ct);
 
-        if (stopToRemove is null) return false;
+        if (stopToRemove is null) throw new NotFoundException("RouteStop", request.RouteStopId);
 
-        var remainingStops = await context.RouteStops
-        .Where(rs => rs.LineId == request.LineId
-                  && rs.Direction == request.Direction
-                  && rs.StopId != request.StopId)
-        .OrderBy(rs => rs.Sequence)
+        var stopsToResequence = await context.RouteStops
+        .Where(rs => rs.LineId == stopToRemove.LineId
+                  && rs.Direction == stopToRemove.Direction
+                  && rs.Sequence > stopToRemove.Sequence)
         .ToListAsync(ct);
 
         context.RouteStops.Remove(stopToRemove);
 
         //changing the sequence of the remaining stops
-        for (int i = 0; i < remainingStops.Count; i++)
+        foreach (var stop in stopsToResequence)
         {
-            remainingStops[i].Sequence = i + 1;
+            stop.Sequence -= 1;
         }
 
         await context.SaveChangesAsync(ct);
-        return true;
     }
 }

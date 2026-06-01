@@ -6,7 +6,7 @@ public record UpdateSequenceCommand(
     int LineId,
     int Direction,
     List<int> NewStopIds
-) : IRequest<bool>;
+) : IRequest;
 
 public record UpdateSequenceBody(
     int Direction, 

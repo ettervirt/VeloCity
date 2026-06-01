@@ -6,7 +6,7 @@ public record AddStopCommand(
     int LineId,
     int StopId,
     int Direction
-) : IRequest<bool>;
+) : IRequest;
 
 public record AddStopBody(
     int StopId, 

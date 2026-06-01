@@ -16,7 +16,7 @@ public class GetLinesHandler(ApplicationDbContext context) : IRequestHandler<Get
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(l => l.Name.ToLower().Contains(request.SearchTerm.ToLower()));
+            query = query.Where(l => l.Name.Contains(request.SearchTerm, StringComparison.OrdinalIgnoreCase));
         }
 
         query = request.IsDescending

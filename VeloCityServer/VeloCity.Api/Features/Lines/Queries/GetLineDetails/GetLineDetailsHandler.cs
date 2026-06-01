@@ -1,14 +1,15 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using VeloCity.Api.Common.Exceptions;
 using VeloCity.Api.Features.Lines.DTOs;
 using VeloCity.Api.Models.Data;
 
 namespace VeloCity.Api.Features.Lines.Queries.GetLineDetails;
 
 public class GetLineDetailsHandler(ApplicationDbContext context) 
-    : IRequestHandler<GetLineDetailsQuery, LineDetailsDto?>
+    : IRequestHandler<GetLineDetailsQuery, LineDetailsDto>
 {
-   public async Task<LineDetailsDto?> Handle(GetLineDetailsQuery request, CancellationToken ct)
+   public async Task<LineDetailsDto> Handle(GetLineDetailsQuery request, CancellationToken ct)
     {
         return await context.Lines
             .AsNoTracking()
@@ -26,6 +27,7 @@ public class GetLineDetailsHandler(ApplicationDbContext context)
                         rs.Direction))
                     .ToList()
             ))
-            .FirstOrDefaultAsync(ct);
+            .FirstOrDefaultAsync(ct) 
+            ?? throw new NotFoundException("Line", request.Id);
     }
 }
