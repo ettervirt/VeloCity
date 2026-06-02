@@ -47,9 +47,14 @@ class ApiService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(
-          `HTTP ${response.status}: ${errorText || response.statusText}`,
-        );
+        let extractedMessage = errorText || response.statusText;
+
+        try {
+          const errorJson = JSON.parse(errorText);
+          extractedMessage = errorJson.message || errorJson.detail || errorJson.title || extractedMessage;
+        } catch (e) {}
+
+        throw new Error(extractedMessage);
       }
 
       if (response.status === 204) {
