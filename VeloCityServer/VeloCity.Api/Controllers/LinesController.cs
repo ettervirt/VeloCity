@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VeloCity.Api.Common.Pagination;
@@ -11,6 +11,7 @@ using VeloCity.Api.Features.Lines.Commands.UpdateSequence;
 using VeloCity.Api.Features.Lines.DTOs;
 using VeloCity.Api.Features.Lines.Queries.GetLineDetails;
 using VeloCity.Api.Features.Lines.Queries.GetLines;
+using VeloCity.Api.Models;
 using VeloCity.Api.Models.Enums;
 
 namespace VeloCity.Api.Controllers;
@@ -96,9 +97,9 @@ public class LinesController(IMediator mediator)
     [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpDelete("{id}/stops/{stopId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> RemoveStopFromRoute(int id, int stopId, [FromQuery] int direction, CancellationToken ct)
+    public async Task<IActionResult> RemoveStopFromRoute(int routeStopId, CancellationToken ct)
     {
-        var command = new RemoveStopCommand(id, stopId, direction);
+        var command = new RemoveStopCommand(routeStopId);
         await mediator.Send(command, ct);
 
         return NoContent();
