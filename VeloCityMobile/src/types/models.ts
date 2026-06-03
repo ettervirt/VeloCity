@@ -10,3 +10,15 @@ export interface LoginResponse {
     name: string | null;
     role: string | null;
 }
+
+export interface RegisterCommand {
+  name: string | null;
+  surname: string | null;
+  email: string | null;
+  password: string | null;
+}
+
+export interface RegisterResponse {
+  id: number | null;
+  message: string | null;
+}

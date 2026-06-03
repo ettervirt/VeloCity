@@ -1,5 +1,5 @@
 import { API_BASE_URL } from './config';
-import type { LoginCommand, LoginResponse } from '../types/models';
+import type { LoginCommand, LoginResponse, RegisterCommand, RegisterResponse } from '../types/models';
 
 class ApiService {
   private baseUrl: string;
@@ -79,6 +79,15 @@ class ApiService {
     if (response.token) {
       this.setToken(response.token);
     }
+
+    return response;
+  }
+
+  async register(data: RegisterCommand): Promise<RegisterResponse> {
+    const response = await this.request<RegisterResponse>('/users/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
 
     return response;
   }
