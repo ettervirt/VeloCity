@@ -34,11 +34,11 @@ namespace VeloCity.Api.Features.Trips.Commands.CreateTrip
                 .ToListAsync(ct);
 
             var currentDepartureTime = request.StartTime;
-            var timetables = new List<Timetable>();
+            var timetables = new List<VeloCity.Api.Models.Timetable>();
 
             foreach (var routeStop in routeStops)
             {
-                var timetableEntry = new Timetable
+                var timetableEntry = new VeloCity.Api.Models.Timetable
                 {
                     TripId = trip.Id,
                     StopId = routeStop.StopId,

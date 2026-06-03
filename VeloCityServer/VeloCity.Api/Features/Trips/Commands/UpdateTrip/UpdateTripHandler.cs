@@ -13,9 +13,8 @@ public class UpdateTripHandler(ApplicationDbContext context)
     public async Task Handle(UpdateTripCommand request, CancellationToken ct)
     {
         var trip = await context.Trips
-            .FirstOrDefaultAsync(t => t.Id == request.Id, ct);
-        if (trip is null) throw new NotFoundException("Trip", request.Id);
-
+            .FirstOrDefaultAsync(t => t.Id == request.Id, ct)
+            ?? throw new NotFoundException("Trip", request.Id);
         trip.LineId = request.LineId;
         trip.VehicleId = request.VehicleId;
         trip.DriverId = request.DriverId;

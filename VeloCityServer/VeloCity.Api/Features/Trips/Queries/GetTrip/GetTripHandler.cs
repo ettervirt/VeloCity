@@ -25,8 +25,8 @@ public class GetTripHandler(ApplicationDbContext context)
                 t.Date,
                 t.Status.ToString()
             ))
-            .FirstOrDefaultAsync(ct);
-        if (tripDto is null) throw new NotFoundException("Trip", request.Id);
+            .FirstOrDefaultAsync(ct)
+            ?? throw new NotFoundException("Trip", request.Id);
         return tripDto;
     }
 }
