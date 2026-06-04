@@ -1,8 +1,9 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon, {IoniconsIconName}  from '@react-native-vector-icons/ionicons';
+import Icon, { IoniconsIconName } from '@react-native-vector-icons/ionicons';
 import DashboardScreen from '../screens/DashboardScreen';
 import RoutesScreen from '../screens/DashboardScreen';
+import WalletTabNavigator from '../navigation/WalletTabNavigator'; 
 import ProfileScreen from '../screens/DashboardScreen';
 
 const Tab = createBottomTabNavigator();
@@ -19,6 +20,7 @@ const MainTabNavigator = () => {
 
           if (route.name === 'Dashboard') iconName = 'home-outline';
           else if (route.name === 'Routes') iconName = 'map-outline';
+          else if (route.name === 'PaymentHistory') iconName = 'wallet-outline';
           else if (route.name === 'Profile') iconName = 'person-outline';
 
           return <Icon name={iconName} size={size} color={color} />;
@@ -35,6 +37,13 @@ const MainTabNavigator = () => {
         component={RoutesScreen}
         options={{ title: 'Trasy' }}
       />
+      
+      <Tab.Screen
+        name="PaymentHistory"
+        component={WalletTabNavigator}
+        options={{ title: 'Portfel' }} 
+      />
+      
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}

@@ -1,5 +1,14 @@
 import { API_BASE_URL } from './config';
-import type { LoginCommand, LoginResponse, RegisterCommand, RegisterResponse } from '../types/models';
+import type {
+  LoginCommand,
+  LoginResponse,
+  RegisterCommand,
+  RegisterResponse,
+  TopUpBalanceCommand,
+  BalanceDto,
+  PaymentDtoPaginatedList,
+  PaymentDto,
+} from '../types';
 
 class ApiService {
   private baseUrl: string;
@@ -26,13 +35,13 @@ class ApiService {
       if (!headers.has('Content-Type')) {
         headers.set('Content-Type', 'application/json');
         if (this.token && !headers.has('Authorization')) {
-            headers.set('Authorization', `Bearer ${this.token}`);
+          headers.set('Authorization', `Bearer ${this.token}`);
         }
       }
     } else {
       headers = {
         'Content-Type': 'application/json',
-        ...(this.token ? { 'Authorization': `Bearer ${this.token}` } : {}),
+        ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
         ...(options.headers as any),
       };
     }
@@ -51,7 +60,11 @@ class ApiService {
 
         try {
           const errorJson = JSON.parse(errorText);
-          extractedMessage = errorJson.message || errorJson.detail || errorJson.title || extractedMessage;
+          extractedMessage =
+            errorJson.message ||
+            errorJson.detail ||
+            errorJson.title ||
+            extractedMessage;
         } catch (e) {}
 
         throw new Error(extractedMessage);
@@ -90,6 +103,34 @@ class ApiService {
     });
 
     return response;
+  }
+  async getBalance(): Promise<BalanceDto> {
+    return await this.request<BalanceDto>('/payments/balance', {
+      method: 'GET',
+    });
+  }
+
+  async topUp(data: TopUpBalanceCommand): Promise<TopUpBalanceCommand> {
+    return await this.request<TopUpBalanceCommand>('/payments/top-up', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getPayments(
+    pageNumber: number = 1,
+    pageSize: number = 10,
+  ): Promise<PaymentDtoPaginatedList> {
+    return await this.request<PaymentDtoPaginatedList>(
+      `/payments?PageNumber=${pageNumber}&PageSize=${pageSize}`,
+      { method: 'GET' },
+    );
+  }
+
+  async getPayment(id: number): Promise<PaymentDto> {
+    return await this.request<PaymentDto>(`/payments/${id}`, {
+      method: 'GET',
+    });
   }
 }
 
