@@ -7,5 +7,6 @@ export type RootStackParamList = {
 export type MainTabParamList = {
   Dashboard: { userName: string };
   Routes: undefined;
+  Wallet: undefined;
   Profile: undefined;
 };
