@@ -2,6 +2,8 @@ import { API_BASE_URL } from './config';
 import type {
   LoginCommand,
   LoginResponse,
+  RegisterCommand,
+  RegisterResponse,
   TopUpBalanceCommand,
   BalanceDto,
   PaymentDtoPaginatedList,
@@ -94,6 +96,14 @@ class ApiService {
     return response;
   }
 
+  async register(data: RegisterCommand): Promise<RegisterResponse> {
+    const response = await this.request<RegisterResponse>('/users/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+
+    return response;
+  }
   async getBalance(): Promise<BalanceDto> {
     return await this.request<BalanceDto>('/payments/balance', {
       method: 'GET',
