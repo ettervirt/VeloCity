@@ -15,14 +15,11 @@ function RootNavigator(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isLoggedIn ? (
           <Stack.Screen name="Main" component={MainTabNavigator} />
-        ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
           </>
-        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

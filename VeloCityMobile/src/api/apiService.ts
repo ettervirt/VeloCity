@@ -8,6 +8,8 @@ import type {
   BalanceDto,
   PaymentDtoPaginatedList,
   PaymentDto,
+  TicketDto,
+  TicketTypeDto,
 } from '../types';
 
 class ApiService {
@@ -132,6 +134,51 @@ class ApiService {
       method: 'GET',
     });
   }
+
+  async getActiveTicket(): Promise<TicketDto[]> {
+    return await this.request<TicketDto[]>('/tickets/my/active', {
+      method: 'GET',
+    });
+  }
+
+  // --- BILETY ---
+async getTicketTypes(): Promise<TicketTypeDto[]> {
+  return await this.request<TicketTypeDto[]>('/tickets/types', { method: 'GET' });
+}
+async createTicket(data: any): Promise<any> {
+  return await this.request('/tickets/types', { method: 'POST', body: JSON.stringify(data) });
+}
+async updateTicket(id: number, data: any): Promise<any> {
+  return await this.request(`/tickets/types/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+}
+async deleteTicket(id: number): Promise<any> {
+  return await this.request(`/tickets/types/${id}`, { method: 'DELETE' });
+}
+
+// --- POJAZDY ---
+async getVehicles(): Promise<any[]> {
+  return await this.request<any[]>('/vehicles', { method: 'GET' });
+}
+async createVehicle(data: any): Promise<any> {
+  return await this.request('/vehicles', { method: 'POST', body: JSON.stringify(data) });
+}
+async updateVehicle(id: number, data: any): Promise<any> {
+  return await this.request(`/vehicles/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+}
+async deleteVehicle(id: number): Promise<any> {
+  return await this.request(`/vehicles/${id}`, { method: 'DELETE' });
+}
+
+// --- LINIE / PRZYSTANKI ---
+async getLines(): Promise<any[]> {
+  return await this.request<any[]>('/lines', { method: 'GET' });
+}
+async createLine(data: any): Promise<any> {
+  return await this.request('/lines', { method: 'POST', body: JSON.stringify(data) });
+}
+async deleteLine(id: number): Promise<any> {
+  return await this.request(`/lines/${id}`, { method: 'DELETE' });
+}
 }
 
 export default new ApiService();
