@@ -44,7 +44,7 @@ const RegisterScreen = ({ navigation }: Props) => {
         });
         navigation.navigate('Login');
       } catch (error: any) {
-        const polishMessage = translateApiError(error.message);
+        const polishMessage = translateApiError(error.message); //Brak tlumaczen? wyswietla brzydkie bledy
         setErrors({ global: [polishMessage] });
       } finally {
         setIsLoading(false);
@@ -148,6 +148,7 @@ const RegisterScreen = ({ navigation }: Props) => {
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text style={styles.footerText}>Masz konto? Zaloguj się</Text>
         </TouchableOpacity>
+        <LoadingOverlay visible={isLoading} />
       </View>
   );
 };
