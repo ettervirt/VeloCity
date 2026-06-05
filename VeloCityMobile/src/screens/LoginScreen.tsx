@@ -43,7 +43,6 @@ const LoginScreen = ({ navigation }: Props) => {
         });
 
         signIn(response.name ?? 'User', response.role ?? '');
-        navigation.replace('Main');
       } catch (error: any) {
         const polishMessage = translateApiError(error.message);
         setErrors({ global: [polishMessage] });

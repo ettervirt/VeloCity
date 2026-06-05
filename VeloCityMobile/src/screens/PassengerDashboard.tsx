@@ -5,60 +5,63 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/useAuthStore';
 import apiService from '../api/apiService';
 import { TicketDto } from '../types/ticket';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-const PassengerDashboard = ({ navigation }: any) => {
-  const { isLoggedIn, user } = useAuthStore();
+interface PassengerDashboardProps {
+  navigation: NativeStackNavigationProp<RootStackParamList>; 
+}
+
+const PassengerDashboard = ({ navigation }: PassengerDashboardProps) => {
+  const { user } = useAuthStore();
   const [balance, setBalance] = useState<string>('0.00');
   const [activeTicket, setActiveTicket] = useState<TicketDto | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-  const fetchDashboardData = async () => {
-    if (!isLoggedIn) return;
-    
-    setIsLoading(true);
-    try {
-      const walletResponse = await apiService.getBalance();
-     
-      setBalance(Number(walletResponse.balance).toFixed(2));
+    const fetchDashboardData = async () => {
+      setIsLoading(true);
+      try {
+        const walletResponse = await apiService.getBalance();
+        setBalance(Number(walletResponse.balance).toFixed(2));
 
-      const ticketResponse = await apiService.getActiveTicket();
-      if (ticketResponse && ticketResponse.length > 0) {
-        setActiveTicket(ticketResponse[0]);
-      } else {
+        const ticketResponse = await apiService.getActiveTicket();
+        if (ticketResponse && ticketResponse.length > 0) {
+          setActiveTicket(ticketResponse[0]);
+        } else {
+          setActiveTicket(null);
+        }
+      } catch (error) {
+        console.error('Błąd podczas pobierania danych pulpitu:', error);
         setActiveTicket(null);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Błąd podczas pobierania danych pulpitu:', error);
-      setActiveTicket(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  fetchDashboardData();
-}, [isLoggedIn]);
+    fetchDashboardData();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.topBar}>
         <View style={styles.logoContainer}>
-        <View style={styles.logoRow}>
-          <Image source={Logo} style={styles.logo} resizeMode="contain" />
-          <Text style={styles.brandName}>VeloCity</Text>
+          <View style={styles.logoRow}>
+            <Image source={Logo} style={styles.logo} resizeMode="contain" />
+            <Text style={styles.brandName}>VeloCity</Text>
+          </View>
+          <Text style={styles.subtitle}>System Zarządzania Transportem</Text>
         </View>
-        <Text style={styles.subtitle}>System Zarządzania Transportem</Text>
-      </View>
 
         <TouchableOpacity 
           style={styles.walletHeaderCard}
-          onPress={() => isLoggedIn ? navigation.navigate('WalletTabs') : navigation.navigate('Login')}
+          onPress={() => navigation.navigate('Main', {screen: 'PaymentHistory', params: { screen: 'Wallet' }})}
         >
           <Text style={styles.walletHeaderLabel}>Portfel 💳</Text>
           {isLoading ? (
             <ActivityIndicator size="small" color="#346699" style={{ marginTop: 2 }} />
           ) : (
-            <Text style={styles.walletHeaderBalance}>{isLoggedIn ? `${balance} PLN` : '0.00 PLN'}</Text>
+            <Text style={styles.walletHeaderBalance}>{`${balance} PLN`}</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -66,73 +69,51 @@ const PassengerDashboard = ({ navigation }: any) => {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
         <View style={styles.welcomeSection}>
-          <Text style={styles.greetingText}>
-            {isLoggedIn && user ? `Cześć, ${user.name}! 👋` : 'Witaj w VeloCity! 🚇'}
-          </Text>
+          <Text style={styles.greetingText}>Cześć, {user?.name}! 👋</Text>
           <Text style={styles.subtitleText}>Dokąd dzisiaj jedziemy?</Text>
         </View>
 
         <View style={styles.actionSection}>
-          {isLoggedIn ? (
-            // auth user
-            <View style={styles.authContent}>
-              <Text style={styles.sectionTitle}>Twój aktywny bilet</Text>
-              
-              {activeTicket ? (
-                <View style={[styles.activeTicketCard, styles.hasTicketCard]}>
-                  <Text style={styles.ticketLine}>{activeTicket.ticketTypeName}</Text>
-                  
-                  {activeTicket.vehicleId !== null && activeTicket.vehicleId !== undefined ? (
-                    <Text style={styles.ticketType}>Pojazd: #{activeTicket.vehicleId}</Text>
-                  ) : (
-                    <Text style={styles.ticketType}>Bilet sieciowy</Text>
-                  )}
-                  
-                  <Text style={styles.ticketTime}>
-                    Ważny do: {new Date(activeTicket.validTo).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          <View style={styles.authContent}>
+            <Text style={styles.sectionTitle}>Twój aktywny bilet</Text>
+            
+            {activeTicket ? (
+              <View style={[styles.activeTicketCard, styles.hasTicketCard]}>
+                <Text style={styles.ticketLine}>{activeTicket.ticketTypeName}</Text>
+                
+                {activeTicket.vehicleId !== null && activeTicket.vehicleId !== undefined ? (
+                  <Text style={styles.ticketType}>Pojazd: #{activeTicket.vehicleId}</Text>
+                ) : (
+                  <Text style={styles.ticketType}>Bilet sieciowy</Text>
+                )}
+                
+                <Text style={styles.ticketTime}>
+                  Ważny do: {new Date(activeTicket.validTo).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </Text>
+                
+                <View style={styles.qrContainer}>
+                  <Text style={styles.qrPlaceholder}>
+                    {activeTicket.isValidated ? '📷 Bilet skasowany' : '⚠️ Wymaga skasowania'}
                   </Text>
                   
-                  <View style={styles.qrContainer}>
-                    <Text style={styles.qrPlaceholder}>
-                      {activeTicket.isValidated ? '📷 Bilet skasowany' : '⚠️ Wymaga skasowania'}
-                    </Text>
-                    
-                    {activeTicket.isValidated && (
-                      <Text style={styles.ticketIdText}>ID: Velo-{activeTicket.id}</Text>
-                    )}
-                  </View>
+                  {activeTicket.isValidated && (
+                    <Text style={styles.ticketIdText}>ID: Velo-{activeTicket.id}</Text>
+                  )}
                 </View>
-              ) : (
-                <View style={styles.activeTicketCard}>
-                  <Text style={styles.noTicketText}>Brak aktywnych biletów w tej chwili.</Text>
-                </View>
-              )}
+              </View>
+            ) : (
+              <View style={styles.activeTicketCard}>
+                <Text style={styles.noTicketText}>Brak aktywnych biletów w tej chwili.</Text>
+              </View>
+            )}
 
-              <TouchableOpacity 
-                style={styles.primaryButton}
-                onPress={() => navigation.navigate('Routes')}
-              >
-                <Text style={styles.buttonText}>🎫 Kup nowy bilet</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            // no auth user
-            <View style={styles.guestContent}>
-              <TouchableOpacity 
-                style={styles.primaryButton}
-                onPress={() => navigation.navigate('Routes')}
-              >
-                <Text style={styles.buttonText}>🎫 Kup bilet</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={styles.secondaryButton}
-                onPress={() => navigation.navigate('Routes')}
-              >
-                <Text style={styles.secondaryButtonText}>🔍 Sprawdź kursy i rozkład</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+            <TouchableOpacity 
+              style={styles.primaryButton}
+              onPress={() => navigation.navigate('Main', { screen: 'Routes' })}
+            >
+              <Text style={styles.buttonText}>🎫 Kup nowy bilet</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
       </ScrollView>
@@ -141,7 +122,6 @@ const PassengerDashboard = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  // --- GŁÓWNY KONTENER ---
   container: {
     flex: 1,
     backgroundColor: '#F5F7FA',
@@ -152,8 +132,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingBottom: 60,
   },
-
-  // --- TOP BAR (LOGO + PORTFEL) ---
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -210,8 +188,6 @@ const styles = StyleSheet.create({
     color: '#346699',
     marginTop: 2,
   },
-
-  // --- SEKCJA POWITALNA ---
   welcomeSection: {
     alignItems: 'center',
     marginBottom: 40,
@@ -229,17 +205,11 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textAlign: 'center',
   },
-
-  // --- SEKCJA AKCJI (KARTY BILETU) ---
   actionSection: {
     width: '100%',
   },
   authContent: {
     width: '100%',
-  },
-  guestContent: {
-    width: '100%',
-    gap: 12, 
   },
   sectionTitle: {
     fontSize: 16,
@@ -247,8 +217,6 @@ const styles = StyleSheet.create({
     color: '#1A1C1E',
     marginBottom: 12,
   },
-  
-  // --- KARTY BILETOWE (DASHED vs ACTIVE) ---
   activeTicketCard: {
     backgroundColor: '#FFF',
     borderRadius: 16,
@@ -305,8 +273,6 @@ const styles = StyleSheet.create({
     color: '#7F8C8D',
     fontFamily: 'monospace',
   },
-
-  // --- PRZYCISKI ---
   primaryButton: {
     backgroundColor: '#346699',
     width: '100%',
@@ -322,21 +288,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  secondaryButton: {
-    backgroundColor: '#FFF',
-    width: '100%',
-    padding: 16,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: '#346699',
-  },
-  secondaryButtonText: {
-    color: '#346699',
     fontSize: 16,
     fontWeight: 'bold',
   },

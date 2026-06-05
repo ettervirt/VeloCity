@@ -16,3 +16,7 @@ export interface TicketTypeDto {
   durationInMinutes: number;
   zoneLimit: number;
 }
+
+export interface PurchaseTicketCommand {
+  ticketTypeId: number;
+}

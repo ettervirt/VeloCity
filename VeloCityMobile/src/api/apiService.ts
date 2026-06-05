@@ -10,6 +10,11 @@ import type {
   PaymentDto,
   TicketDto,
   TicketTypeDto,
+  PurchaseTicketCommand,
+  Vehicle,
+  VehicleCommand,
+  Line,
+  LineCommand,
 } from '../types';
 
 class ApiService {
@@ -106,6 +111,7 @@ class ApiService {
 
     return response;
   }
+
   async getBalance(): Promise<BalanceDto> {
     return await this.request<BalanceDto>('/payments/balance', {
       method: 'GET',
@@ -142,43 +148,80 @@ class ApiService {
   }
 
   // --- BILETY ---
-async getTicketTypes(): Promise<TicketTypeDto[]> {
-  return await this.request<TicketTypeDto[]>('/tickets/types', { method: 'GET' });
-}
-async createTicket(data: any): Promise<any> {
-  return await this.request('/tickets/types', { method: 'POST', body: JSON.stringify(data) });
-}
-async updateTicket(id: number, data: any): Promise<any> {
-  return await this.request(`/tickets/types/${id}`, { method: 'PUT', body: JSON.stringify(data) });
-}
-async deleteTicket(id: number): Promise<any> {
-  return await this.request(`/tickets/types/${id}`, { method: 'DELETE' });
-}
+  async getTicketTypes(): Promise<TicketTypeDto[]> {
+    return await this.request<TicketTypeDto[]>('/tickets/types', { method: 'GET' });
+  }
 
-// --- POJAZDY ---
-async getVehicles(): Promise<any[]> {
-  return await this.request<any[]>('/vehicles', { method: 'GET' });
-}
-async createVehicle(data: any): Promise<any> {
-  return await this.request('/vehicles', { method: 'POST', body: JSON.stringify(data) });
-}
-async updateVehicle(id: number, data: any): Promise<any> {
-  return await this.request(`/vehicles/${id}`, { method: 'PUT', body: JSON.stringify(data) });
-}
-async deleteVehicle(id: number): Promise<any> {
-  return await this.request(`/vehicles/${id}`, { method: 'DELETE' });
-}
+  async purchaseTicket(data: PurchaseTicketCommand): Promise<TicketDto> {
+    return await this.request<TicketDto>('/tickets/purchase', { 
+      method: 'POST', 
+      body: JSON.stringify(data) 
+    });
+  }
 
-// --- LINIE / PRZYSTANKI ---
-async getLines(): Promise<any[]> {
-  return await this.request<any[]>('/lines', { method: 'GET' });
-}
-async createLine(data: any): Promise<any> {
-  return await this.request('/lines', { method: 'POST', body: JSON.stringify(data) });
-}
-async deleteLine(id: number): Promise<any> {
-  return await this.request(`/lines/${id}`, { method: 'DELETE' });
-}
+  async createTicket(data: TicketTypeDto): Promise<TicketTypeDto> {
+    return await this.request<TicketTypeDto>('/tickets/types', { 
+      method: 'POST', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async updateTicket(id: number, data: TicketTypeDto): Promise<TicketTypeDto> {
+    return await this.request<TicketTypeDto>(`/tickets/types/${id}`, { 
+      method: 'PUT', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async deleteTicket(id: number): Promise<void> {
+    return await this.request<void>(`/tickets/types/${id}`, { method: 'DELETE' });
+  }
+
+  // --- POJAZDY ---
+  async getVehicles(): Promise<Vehicle[]> {
+    return await this.request<Vehicle[]>('/vehicles', { method: 'GET' });
+  }
+
+  async createVehicle(data: VehicleCommand): Promise<Vehicle> {
+    return await this.request<Vehicle>('/vehicles', { 
+      method: 'POST', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async updateVehicle(id: number, data: VehicleCommand): Promise<Vehicle> {
+    return await this.request<Vehicle>(`/vehicles/${id}`, { 
+      method: 'PUT', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async deleteVehicle(id: number): Promise<void> {
+    return await this.request<void>(`/vehicles/${id}`, { method: 'DELETE' });
+  }
+
+  // --- LINIE / PRZYSTANKI ---
+  async getLines(): Promise<Line[]> {
+    return await this.request<Line[]>('/lines', { method: 'GET' });
+  }
+
+  async createLine(data: LineCommand): Promise<Line> {
+    return await this.request<Line>('/lines', { 
+      method: 'POST', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async updateLine(id: number, data: LineCommand): Promise<Line> {
+    return await this.request<Line>(`/lines/${id}`, { 
+      method: 'PUT', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async deleteLine(id: number): Promise<void> {
+    return await this.request<void>(`/lines/${id}`, { method: 'DELETE' });
+  }
 }
 
 export default new ApiService();

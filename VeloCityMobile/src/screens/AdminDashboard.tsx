@@ -7,7 +7,7 @@ import { TicketTypeDto } from '../types/ticket';
 
 type TabType = 'tickets' | 'vehicles' | 'lines';
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ navigation }: any) => {
   const user = useAuthStore((state) => state.user);
   const signOut = useAuthStore((state) => state.signOut);
   const [activeTab, setActiveTab] = useState<TabType>('tickets');
