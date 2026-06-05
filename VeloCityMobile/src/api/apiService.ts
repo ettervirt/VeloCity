@@ -2,10 +2,19 @@ import { API_BASE_URL } from './config';
 import type {
   LoginCommand,
   LoginResponse,
+  RegisterCommand,
+  RegisterResponse,
   TopUpBalanceCommand,
   BalanceDto,
   PaymentDtoPaginatedList,
   PaymentDto,
+  TicketDto,
+  TicketTypeDto,
+  PurchaseTicketCommand,
+  Vehicle,
+  VehicleCommand,
+  Line,
+  LineCommand,
 } from '../types';
 
 class ApiService {
@@ -94,6 +103,15 @@ class ApiService {
     return response;
   }
 
+  async register(data: RegisterCommand): Promise<RegisterResponse> {
+    const response = await this.request<RegisterResponse>('/users/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+
+    return response;
+  }
+
   async getBalance(): Promise<BalanceDto> {
     return await this.request<BalanceDto>('/payments/balance', {
       method: 'GET',
@@ -121,6 +139,88 @@ class ApiService {
     return await this.request<PaymentDto>(`/payments/${id}`, {
       method: 'GET',
     });
+  }
+
+  async getActiveTicket(): Promise<TicketDto[]> {
+    return await this.request<TicketDto[]>('/tickets/my/active', {
+      method: 'GET',
+    });
+  }
+
+  // --- BILETY ---
+  async getTicketTypes(): Promise<TicketTypeDto[]> {
+    return await this.request<TicketTypeDto[]>('/tickets/types', { method: 'GET' });
+  }
+
+  async purchaseTicket(data: PurchaseTicketCommand): Promise<TicketDto> {
+    return await this.request<TicketDto>('/tickets/purchase', { 
+      method: 'POST', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async createTicket(data: TicketTypeDto): Promise<TicketTypeDto> {
+    return await this.request<TicketTypeDto>('/tickets/types', { 
+      method: 'POST', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async updateTicket(id: number, data: TicketTypeDto): Promise<TicketTypeDto> {
+    return await this.request<TicketTypeDto>(`/tickets/types/${id}`, { 
+      method: 'PUT', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async deleteTicket(id: number): Promise<void> {
+    return await this.request<void>(`/tickets/types/${id}`, { method: 'DELETE' });
+  }
+
+  // --- POJAZDY ---
+  async getVehicles(): Promise<Vehicle[]> {
+    return await this.request<Vehicle[]>('/vehicles', { method: 'GET' });
+  }
+
+  async createVehicle(data: VehicleCommand): Promise<Vehicle> {
+    return await this.request<Vehicle>('/vehicles', { 
+      method: 'POST', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async updateVehicle(id: number, data: VehicleCommand): Promise<Vehicle> {
+    return await this.request<Vehicle>(`/vehicles/${id}`, { 
+      method: 'PUT', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async deleteVehicle(id: number): Promise<void> {
+    return await this.request<void>(`/vehicles/${id}`, { method: 'DELETE' });
+  }
+
+  // --- LINIE / PRZYSTANKI ---
+  async getLines(): Promise<Line[]> {
+    return await this.request<Line[]>('/lines', { method: 'GET' });
+  }
+
+  async createLine(data: LineCommand): Promise<Line> {
+    return await this.request<Line>('/lines', { 
+      method: 'POST', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async updateLine(id: number, data: LineCommand): Promise<Line> {
+    return await this.request<Line>(`/lines/${id}`, { 
+      method: 'PUT', 
+      body: JSON.stringify(data) 
+    });
+  }
+
+  async deleteLine(id: number): Promise<void> {
+    return await this.request<void>(`/lines/${id}`, { method: 'DELETE' });
   }
 }
 

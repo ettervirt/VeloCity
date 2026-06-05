@@ -6,6 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import apiService from '../api/apiService';
 import type { PaymentDto, PaymentStatus, PaymentMethod } from '../types';
 
@@ -28,6 +29,8 @@ const STATUS_COLORS: Record<PaymentStatus, string> = {
 };
 
 const PaymentHistoryScreen = () => {
+  const isFocused = useIsFocused();
+
   const [payments, setPayments] = useState<PaymentDto[]>([]);
   const [page, setPage] = useState<number>(1);
   const [hasNextPage, setHasNextPage] = useState<boolean>(true);
@@ -59,8 +62,8 @@ const PaymentHistoryScreen = () => {
   };
 
   useEffect(() => {
-    fetchPayments(1, true);
-  }, []);
+    if(isFocused) fetchPayments(1, true);
+  }, [isFocused]);
 
   const handleRefresh = () => {
     fetchPayments(1, true);

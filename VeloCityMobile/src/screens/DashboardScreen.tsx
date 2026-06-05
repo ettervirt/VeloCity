@@ -1,14 +1,24 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { useAuthStore } from '../store/useAuthStore';
 
-const DashboardScreen = () => {
+import PassengerDashboard from '../screens/PassengerDashboard';
+import DriverDashboard from '../screens/DriverDashboard';
+import AdminDashboard from '../screens/AdminDashboard';
 
-  return (
-    <></>
-  );
-};
+export default function DashboardScreen({ navigation }: any) {
+  const { isLoggedIn, user } = useAuthStore();
 
-const styles = StyleSheet.create({
-});
+  if (!isLoggedIn || !user) {
+    return <PassengerDashboard navigation={navigation} />;
+  }
 
-export default DashboardScreen;
+  switch (user.role) {
+    case 'Admin':
+      return <AdminDashboard navigation={navigation} />;
+    case 'Driver':
+      return <DriverDashboard navigation={navigation} />;
+    case 'Passenger':
+    default:
+      return <PassengerDashboard navigation={navigation} />;
+  }
+}
