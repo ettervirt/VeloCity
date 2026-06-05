@@ -18,6 +18,9 @@ public class PaginatedList<T>(List<T> items, int count, int pageNumber, int page
         int pageSize,
         CancellationToken cancellationToken = default)
     {
+        pageNumber = pageNumber < 1 ? 1 : pageNumber;
+        pageSize = pageSize < 1 ? 10 : pageSize;
+
         var count = await source.CountAsync(cancellationToken);
 
         var items = await source
