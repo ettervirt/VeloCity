@@ -13,13 +13,17 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator(): React.JSX.Element {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   return (
+    
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Main" component={MainTabNavigator} />
-        
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        
+        {isLoggedIn ? (
+            <Stack.Screen name="Main" component={MainTabNavigator} />
+         ) : (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
+         )}
       </Stack.Navigator>
     </NavigationContainer>
   );
