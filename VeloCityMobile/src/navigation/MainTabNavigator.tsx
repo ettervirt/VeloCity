@@ -4,7 +4,7 @@ import Icon, { IoniconsIconName } from '@react-native-vector-icons/ionicons';
 import DashboardScreen from '../screens/DashboardScreen';
 import RoutesScreen from '../screens/DashboardScreen';
 import WalletTabNavigator from '../navigation/WalletTabNavigator'; 
-import ProfileScreen from '../screens/DashboardScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
