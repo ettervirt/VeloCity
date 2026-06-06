@@ -13,6 +13,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<TicketType> TicketTypes => Set<TicketType>();
     public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<Trip> Trips => Set<Trip>();
+    public DbSet<Timetable> Timetables => Set<Timetable>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
