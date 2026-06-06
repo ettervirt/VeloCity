@@ -27,7 +27,7 @@ export interface Stop {
 export interface LineDetailsDto {
   id: number;
   name: string;
-  Stops: Stop[];
+  stops: Stop[];
 }
 
 export interface PaginatedList<T> {

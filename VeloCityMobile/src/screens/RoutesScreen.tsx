@@ -60,7 +60,7 @@ const RoutesScreen = ({ navigation }: RoutesScreenProps) => {
 
       // Wyciągnij unikalne kierunki
       const uniqueDirections = Array.from(
-        new Set(lineDetail.Stops.map((stop: Stop) => stop.direction))
+        new Set(lineDetail.stops.map((stop: Stop) => stop.direction))
       ) as number[];
       setDirections(uniqueDirections.sort((a, b) => a - b));
 
@@ -191,7 +191,7 @@ const RoutesScreen = ({ navigation }: RoutesScreenProps) => {
 
   // STOPS SCREEN
   if (screenState === 'stops' && selectedLine && selectedDirection !== null) {
-    const filteredStops = selectedLine.Stops.filter(
+    const filteredStops = selectedLine.stops.filter(
       (stop) => stop.direction === selectedDirection
     );
 
@@ -234,10 +234,6 @@ const RoutesScreen = ({ navigation }: RoutesScreenProps) => {
                 scrollEnabled={false}
                 contentContainerStyle={styles.listContent}
               />
-
-              <TouchableOpacity style={styles.buyButton} onPress={handleBuyTicket}>
-                <Text style={styles.buyButtonText}>🎫 Kup bilet</Text>
-              </TouchableOpacity>
             </>
           ) : (
             <View style={styles.emptyContainer}>
