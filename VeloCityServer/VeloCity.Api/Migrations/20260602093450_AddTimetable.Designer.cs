@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VeloCity.Api.Models.Data;
@@ -11,9 +12,11 @@ using VeloCity.Api.Models.Data;
 namespace VeloCity.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260602093450_AddTimetable")]
+    partial class AddTimetable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -473,9 +476,6 @@ namespace VeloCity.Api.Migrations
                     b.Property<TimeSpan>("DepartureTime")
                         .HasColumnType("interval");
 
-                    b.Property<int>("Sequence")
-                        .HasColumnType("integer");
-
                     b.Property<int>("StopId")
                         .HasColumnType("integer");
 
@@ -499,9 +499,6 @@ namespace VeloCity.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
                     b.Property<int>("DriverId")
                         .HasColumnType("integer");
 
@@ -509,9 +506,6 @@ namespace VeloCity.Api.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<int>("LineId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<int>("VehicleId")

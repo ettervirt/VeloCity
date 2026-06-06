@@ -6,4 +6,5 @@ public class Line
     public string Name { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
     public virtual ICollection<RouteStop> RouteStops { get; set; } = new List<RouteStop>();
+    public virtual ICollection<Trip> Trips { get; set; } = new List<Trip>();
 }
