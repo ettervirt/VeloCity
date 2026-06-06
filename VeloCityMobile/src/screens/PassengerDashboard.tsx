@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Logo from '../assets/logo.png';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/useAuthStore';
 import apiService from '../api/apiService';
@@ -17,6 +18,8 @@ const PassengerDashboard = ({ navigation }: PassengerDashboardProps) => {
   const [balance, setBalance] = useState<string>('0.00');
   const [activeTicket, setActiveTicket] = useState<TicketDto | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -39,8 +42,8 @@ const PassengerDashboard = ({ navigation }: PassengerDashboardProps) => {
       }
     };
 
-    fetchDashboardData();
-  }, []);
+    if(isFocused) fetchDashboardData();
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
