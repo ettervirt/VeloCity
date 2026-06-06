@@ -1,4 +1,5 @@
 using MediatR;
+using VeloCity.Api.Models.Enums;
 
 namespace VeloCity.Api.Features.Trips.Commands.UpdateTrip;
 
@@ -9,6 +10,6 @@ public record UpdateTripCommand(
     int DriverId,
     bool IsActive,
     DateTime Date,
-    string Status
+    TripStatus Status
 ) : IRequest;
 

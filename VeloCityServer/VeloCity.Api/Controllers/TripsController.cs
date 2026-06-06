@@ -5,6 +5,7 @@ using VeloCity.Api.Features.Trips.Commands.CreateTrip;
 using VeloCity.Api.Features.Trips.Commands.DeleteTrip;
 using VeloCity.Api.Features.Trips.Commands.UpdateTrip;
 using VeloCity.Api.Features.Trips.DTOs;
+using VeloCity.Api.Features.Trips.Queries.GetTrips;
 using VeloCity.Api.Features.Trips.Queries.GetTrip;
 using VeloCity.Api.Models.Enums;
 
@@ -22,10 +23,10 @@ public class TripsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> CreateTrip([FromBody] CreateTripCommand command, CancellationToken ct)
     {
         var tripId = await mediator.Send(command, ct);
-        return CreatedAtAction(nameof(CreateTrip), new { id = tripId }, new { Id = tripId });
+        return CreatedAtAction(nameof(GetTrip), new { id = tripId }, new { Id = tripId });
     }
 
-    //ADMIN ONLY: get all trips
+    //ADMIN ONLY: get trip by id
     [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(TripDto), StatusCodes.Status200OK)]
@@ -39,7 +40,7 @@ public class TripsController(IMediator mediator) : ControllerBase
     //ADMIN ONLY: get all trips
     [Authorize(Roles = nameof(UserRole.Admin))]
     [HttpGet]
-    public async Task<IActionResult> GetTrips([FromBody] GetTripQuery query, CancellationToken ct)
+    public async Task<IActionResult> GetTrips([FromQuery] GetTripsQuery query, CancellationToken ct)
     {
         var result = await mediator.Send(query, ct);
         return Ok(result);

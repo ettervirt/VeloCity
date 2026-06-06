@@ -13,11 +13,13 @@ namespace VeloCity.Api.Features.Timetable.Queries.GetTimetables
         {
             var query = context.Timetables
             .Include(t => t.Stop)
+            .Include(t => t.Trip)
             .AsNoTracking();
 
+            query = query.Where(t => t.Trip.IsActive);
             if (!string.IsNullOrWhiteSpace(request.SearchTerm))
             {
-                query = query.Where(t => t.Stop.Name.Contains(request.SearchTerm, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(t => t.Stop.Name.Contains(request.SearchTerm));
             }
             query = query.OrderByDescending(t => t.TripId);
                

@@ -20,14 +20,7 @@ public class UpdateTripHandler(ApplicationDbContext context)
         trip.DriverId = request.DriverId;
         trip.IsActive = request.IsActive;
         trip.Date = DateOnly.FromDateTime(request.Date);
-        if (Enum.TryParse<TripStatus>(request.Status, true, out var parsedStatus))
-        {
-            trip.Status = parsedStatus;
-        }
-        else
-        {
-            trip.Status = TripStatus.Scheduled;
-        }
+        trip.Status = request.Status;
 
         await context.SaveChangesAsync(ct);
     }
