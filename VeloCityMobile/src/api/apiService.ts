@@ -18,6 +18,8 @@ import type {
   Stop,
   LineDetailsDto, 
   PaginatedList, 
+  TimetableDto,
+  TimetableResponse,
 } from '../types';
 
 class ApiService {
@@ -244,6 +246,16 @@ class ApiService {
 
 async getLineStops(id: number): Promise<Stop[]> {
   return await this.request<Stop[]>(`/lines/${id}/stops`, { method: 'GET' });
+}
+
+async getTimetable(id: number): Promise<TimetableDto> {
+  return await this.request<TimetableDto>(`/timetable/${id}`, { 
+    method: 'GET' 
+  });
+}
+
+async getTimetables(): Promise<TimetableResponse> {
+  return await this.request<TimetableResponse>(`/timetable`, { method: 'GET' });
 }
 
 }

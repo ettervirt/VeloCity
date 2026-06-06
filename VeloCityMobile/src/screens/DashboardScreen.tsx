@@ -13,8 +13,8 @@ export default function DashboardScreen({ navigation }: any) {
   }
 
   switch (user.role) {
-    case 'Admin':
-      return <AdminDashboard navigation={navigation} />;
+    // case 'Admin':
+    //   return <AdminDashboard navigation={navigation} />;
     case 'Driver':
       return <DriverDashboard navigation={navigation} />;
     case 'Passenger':
