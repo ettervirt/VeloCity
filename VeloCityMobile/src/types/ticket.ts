@@ -3,9 +3,9 @@ export interface TicketDto {
   ticketTypeName: string;
   price: number;
   purchasedAt: string;
-  validFrom: string;
-  validTo: string;
-  vehicleId: number;
+  validFrom: string | null;
+  validTo: string | null;
+  vehicleId: number | null;
   isValidated: boolean;
 }
 
@@ -19,4 +19,14 @@ export interface TicketTypeDto {
 
 export interface PurchaseTicketCommand {
   ticketTypeId: number;
+}
+
+export interface TicketDtoPaginatedList {
+  items: TicketDto[];
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 }
