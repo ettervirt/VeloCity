@@ -16,6 +16,9 @@ import type {
   VehicleCommand,
   Line,
   LineCommand,
+  Stop,
+  LineDetailsDto, 
+  PaginatedList, 
 } from '../types';
 
 class ApiService {
@@ -202,8 +205,20 @@ class ApiService {
   }
 
   // --- LINIE / PRZYSTANKI ---
-  async getLines(): Promise<Line[]> {
-    return await this.request<Line[]>('/lines', { method: 'GET' });
+  async getLines(
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    searchTerm?: string,
+    isDescending: boolean = false
+  ): Promise<PaginatedList<Line>> {
+    const params = new URLSearchParams({
+      pageNumber: pageNumber.toString(),
+      pageSize: pageSize.toString(),
+      isDescending: isDescending.toString(),
+      ...(searchTerm && { searchTerm })
+    });
+
+    return await this.request<PaginatedList<Line>>(`/lines?${params.toString()}`, { method: 'GET' });
   }
 
   async createLine(data: LineCommand): Promise<Line> {
@@ -223,6 +238,14 @@ class ApiService {
   async deleteLine(id: number): Promise<void> {
     return await this.request<void>(`/lines/${id}`, { method: 'DELETE' });
   }
+
+  async getLineDetail(id: number): Promise<LineDetailsDto> {
+  return await this.request<LineDetailsDto>(`/lines/${id}`, { method: 'GET' });
+}
+
+async getLineStops(id: number): Promise<Stop[]> {
+  return await this.request<Stop[]>(`/lines/${id}/stops`, { method: 'GET' });
+}
 
   async getTicketHistory(pageNumber: number = 1, pageSize: number = 10): Promise<TicketDtoPaginatedList> {
     return await this.request<TicketDtoPaginatedList>(

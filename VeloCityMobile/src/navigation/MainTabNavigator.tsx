@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon, { IoniconsIconName } from '@react-native-vector-icons/ionicons';
 import DashboardScreen from '../screens/DashboardScreen';
-import RoutesScreen from '../screens/DashboardScreen';
+import RoutesScreen from '../screens/RoutesScreen';
 import WalletTabNavigator from '../navigation/WalletTabNavigator'; 
 import ProfileScreen from '../screens/ProfileScreen';
 
