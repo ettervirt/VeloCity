@@ -1,0 +1,58 @@
+name: Build and Release VeloCityMobile APK
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'VeloCityMobile/**'
+
+jobs:
+  build-and-release:
+    name: Build APK and Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write 
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: VeloCityMobile/package-lock.json
+
+      - name: ☕ Setup Java (JDK 17)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: 📦 Install Dependencies
+        working-directory: ./VeloCityMobile
+        run: npm install
+
+      - name: 🔨 Build Android Release APK
+        working-directory: ./VeloCityMobile/android
+        run: ./gradlew assembleRelease
+
+      - name: 🏷️ Extract App Version
+        id: get_version
+        working-directory: ./VeloCityMobile
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: 🚀 Create GitHub Release & Upload APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.APP_VERSION }}-${{ github.run_number }}
+          name: "VeloCityMobile v${{ env.APP_VERSION }} (Build ${{ github.run_number }})"
+          body: "Automatyczny build aplikacji VeloCityMobile po aktualizacji kodu."
+          files: VeloCityMobile/android/app/build/outputs/apk/release/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
