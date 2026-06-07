@@ -91,7 +91,9 @@ const PassengerDashboard = ({ navigation }: PassengerDashboardProps) => {
                 )}
                 
                 <Text style={styles.ticketTime}>
-                  Ważny do: {new Date(activeTicket.validTo).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {activeTicket.validTo 
+                    ? `Ważny do: ${new Date(activeTicket.validTo).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                    : 'Ważność: Czeka na skasowanie'}
                 </Text>
                 
                 <View style={styles.qrContainer}>
@@ -112,7 +114,7 @@ const PassengerDashboard = ({ navigation }: PassengerDashboardProps) => {
 
             <TouchableOpacity 
               style={styles.primaryButton}
-              onPress={() => navigation.navigate('Main', { screen: 'Routes' })}
+              onPress={() => navigation.navigate('PurchaseTicket')}
             >
               <Text style={styles.buttonText}>🎫 Kup nowy bilet</Text>
             </TouchableOpacity>

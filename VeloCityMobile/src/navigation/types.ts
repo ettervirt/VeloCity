@@ -7,6 +7,8 @@ export type RootStackParamList = {
       screen: string;
     };
   };
+  PurchaseTicket: undefined;
+  TicketHistory: undefined;
 };
 
 export type MainTabParamList = {

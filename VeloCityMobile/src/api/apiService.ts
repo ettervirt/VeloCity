@@ -11,6 +11,7 @@ import type {
   TicketDto,
   TicketTypeDto,
   PurchaseTicketCommand,
+  TicketDtoPaginatedList,
   Vehicle,
   VehicleCommand,
   Line,
@@ -155,10 +156,10 @@ class ApiService {
     return await this.request<TicketTypeDto[]>('/tickets/types', { method: 'GET' });
   }
 
-  async purchaseTicket(data: PurchaseTicketCommand): Promise<TicketDto> {
-    return await this.request<TicketDto>('/tickets/purchase', { 
-      method: 'POST', 
-      body: JSON.stringify(data) 
+  async purchaseTicket(command: PurchaseTicketCommand): Promise<number> {
+    return await this.request<number>('/tickets/purchase', {
+      method: 'POST',
+      body: JSON.stringify(command),
     });
   }
 
@@ -246,6 +247,12 @@ async getLineStops(id: number): Promise<Stop[]> {
   return await this.request<Stop[]>(`/lines/${id}/stops`, { method: 'GET' });
 }
 
+  async getTicketHistory(pageNumber: number = 1, pageSize: number = 10): Promise<TicketDtoPaginatedList> {
+    return await this.request<TicketDtoPaginatedList>(
+      `/tickets/my/history?PageNumber=${pageNumber}&PageSize=${pageSize}`,
+      { method: 'GET' }
+    );
+  }
 }
 
 export default new ApiService();
