@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  FlatList,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -28,7 +30,6 @@ const RoutesScreen = ({ navigation }: RoutesScreenProps) => {
   const [selectedDirection, setSelectedDirection] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [times, setTimes] = useState<Record<number, string>>({});
 
   useEffect(() => {
     if (screenState === 'lines') {
@@ -36,43 +37,19 @@ const RoutesScreen = ({ navigation }: RoutesScreenProps) => {
     }
   }, [screenState]);
 
-  useEffect(() => {
-    if (screenState === 'stops' && selectedLine && selectedDirection !== null) {
-      fetchTimetables();
-    }
-  }, [screenState, selectedDirection]);
-
   const fetchLines = async () => {
     try {
       setError(null);
       setIsLoading(true);
       const response = await apiService.getLines(1, 100);
-      setLines(response?.items || []);
+      setLines(response.items);
     } catch (err: any) {
-      setError(translateApiError(err?.message || 'Nieznany błąd linii'));
+      setError(translateApiError(err.message));
+      console.error('Błąd podczas pobierania linii:', err);
     } finally {
       setIsLoading(false);
     }
   };
-
-const fetchTimetables = async () => {
-  try {
-    setIsLoading(true);
-    const response = await apiService.getTimetables(); 
-    
-    const newTimes: Record<number, string> = {};
-    if (response?.items) {
-      response.items.forEach((item: any) => {
-        newTimes[item.stopId] = item.departureTime?.substring(0, 5) || '--:--';
-      });
-    }
-    setTimes(newTimes);
-  } catch (err) {
-    console.error('Błąd pobierania rozkładu:', err);
-  } finally {
-    setIsLoading(false);
-  }
-};
 
   const handleLineSelect = async (lineId: number) => {
     try {
@@ -81,18 +58,15 @@ const fetchTimetables = async () => {
       const lineDetail = await apiService.getLineDetail(lineId);
       setSelectedLine(lineDetail);
 
-      if (lineDetail && Array.isArray(lineDetail.stops)) {
-        const uniqueDirections = Array.from(
-          new Set(lineDetail.stops.map((stop: Stop) => stop.direction))
-        ) as number[];
-        setDirections(uniqueDirections.sort((a, b) => a - b));
-      } else {
-        setDirections([]);
-      }
+      // Wyciągnij unikalne kierunki
+      const uniqueDirections = Array.from(
+        new Set(lineDetail.stops.map((stop: Stop) => stop.direction))
+      ) as number[];
+      setDirections(uniqueDirections.sort((a, b) => a - b));
 
       setScreenState('directions');
     } catch (err: any) {
-      setError(translateApiError(err?.message || 'Nieznany błąd szczegółów linii'));
+      setError(translateApiError(err.message));
       console.error('Błąd podczas pobierania szczegółów linii:', err);
     } finally {
       setIsLoading(false);
@@ -104,6 +78,10 @@ const fetchTimetables = async () => {
     setScreenState('stops');
   };
 
+  const handleBuyTicket = () => {
+    navigation.navigate('Main', { screen: 'BuyTicketScreen' });
+  };
+
   const handleBack = () => {
     if (screenState === 'directions') {
       setSelectedLine(null);
@@ -111,12 +89,11 @@ const fetchTimetables = async () => {
       setScreenState('lines');
     } else if (screenState === 'stops') {
       setSelectedDirection(null);
-      setTimes({});
       setScreenState('directions');
     }
   };
 
-  // SCREEN: LINES
+  // LINES SCREEN
   if (screenState === 'lines') {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -138,10 +115,10 @@ const fetchTimetables = async () => {
               <Text style={styles.loadingText}>Ładowanie linii...</Text>
             </View>
           ) : lines.length > 0 ? (
-            <View style={styles.listContent}>
-              {lines.map((item) => (
+            <FlatList
+              data={lines}
+              renderItem={({ item }) => (
                 <TouchableOpacity
-                  key={item.id.toString()}
                   style={styles.lineCard}
                   onPress={() => handleLineSelect(item.id)}
                 >
@@ -153,8 +130,11 @@ const fetchTimetables = async () => {
                   </View>
                   <Text style={styles.arrowIcon}>→</Text>
                 </TouchableOpacity>
-              ))}
-            </View>
+              )}
+              keyExtractor={(item) => item.id.toString()}
+              scrollEnabled={false}
+              contentContainerStyle={styles.listContent}
+            />
           ) : (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>Brak dostępnych linii.</Text>
@@ -165,7 +145,7 @@ const fetchTimetables = async () => {
     );
   }
 
-  // SCREEN: DIRECTIONS
+  // DIRECTIONS SCREEN
   if (screenState === 'directions' && selectedLine) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -184,18 +164,21 @@ const fetchTimetables = async () => {
               <ActivityIndicator size="large" color="#346699" />
             </View>
           ) : directions.length > 0 ? (
-            <View style={styles.listContent}>
-              {directions.map((direction) => (
+            <FlatList
+              data={directions}
+              renderItem={({ item: direction }) => (
                 <TouchableOpacity
-                  key={direction.toString()}
                   style={styles.directionCard}
                   onPress={() => handleDirectionSelect(direction)}
                 >
                   <Text style={styles.directionText}>🧭 Kierunek {direction}</Text>
                   <Text style={styles.arrowIcon}>→</Text>
                 </TouchableOpacity>
-              ))}
-            </View>
+              )}
+              keyExtractor={(item) => item.toString()}
+              scrollEnabled={false}
+              contentContainerStyle={styles.listContent}
+            />
           ) : (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>Brak kierunków dla tej linii.</Text>
@@ -206,11 +189,11 @@ const fetchTimetables = async () => {
     );
   }
 
-  // SCREEN: STOPS
+  // STOPS SCREEN
   if (screenState === 'stops' && selectedLine && selectedDirection !== null) {
-    const filteredStops = selectedLine.stops ? selectedLine.stops.filter(
+    const filteredStops = selectedLine.stops.filter(
       (stop) => stop.direction === selectedDirection
-    ) : [];
+    );
 
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -224,37 +207,34 @@ const fetchTimetables = async () => {
             <Text style={styles.headerSubtitle}>Linia {selectedLine.name} • Kierunek {selectedDirection}</Text>
           </View>
 
-          {isLoading && Object.keys(times).length === 0 ? (
+          {isLoading ? (
             <View style={styles.centerContainer}>
               <ActivityIndicator size="large" color="#346699" />
             </View>
           ) : filteredStops.length > 0 ? (
-            <View style={styles.listContent}>
-              {filteredStops.map((stop) => (
-                <View key={stop.stopId.toString()} style={styles.stopCard}>
-                  <View style={styles.stopCardContent}>
+            <>
+              <FlatList
+                data={filteredStops}
+                renderItem={({ item: stop }) => (
+                  <View style={styles.stopCard}>
                     <View style={styles.stopInfo}>
                       <View style={styles.stopSequence}>
                         <Text style={styles.stopSequenceText}>{stop.sequence}</Text>
                       </View>
                       <View style={styles.stopDetails}>
                         <Text style={styles.stopName}>{stop.stopName}</Text>
-                        <Text style={styles.stopMeta}>ID: {stop.stopId}</Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.timeSection}>
-                      <Text style={styles.timeLabel}>Odjazd</Text>
-                      <View style={styles.timeBadge}>
-                        <Text style={styles.timeText}>
-                          {times[stop.stopId] || '--:--'}
+                        <Text style={styles.stopMeta}>
+                          ID: {stop.stopId}
                         </Text>
                       </View>
                     </View>
                   </View>
-                </View>
-              ))}
-            </View>
+                )}
+                keyExtractor={(item) => item.stopId.toString()}
+                scrollEnabled={false}
+                contentContainerStyle={styles.listContent}
+              />
+            </>
           ) : (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>Brak przystanków dla tego kierunku.</Text>
@@ -269,39 +249,191 @@ const fetchTimetables = async () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F7FA' },
-  scrollContent: { flexGrow: 1, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 40 },
-  centerContainer: { justifyContent: 'center', alignItems: 'center', marginTop: 40 },
-  loadingText: { marginTop: 12, color: '#666', fontSize: 16 },
-  header: { marginBottom: 24, marginTop: 12 },
-  headerTitle: { fontSize: 28, fontWeight: 'bold', color: '#1A1C1E' },
-  headerSubtitle: { fontSize: 14, color: '#666', marginTop: 4 },
-  backButton: { paddingVertical: 10, paddingHorizontal: 12, backgroundColor: '#FFF', borderRadius: 8, alignSelf: 'flex-start', marginBottom: 12, borderWidth: 1, borderColor: '#E1E8EF' },
-  backButtonText: { color: '#346699', fontWeight: '600', fontSize: 14 },
-  errorContainer: { backgroundColor: '#FFE5E5', padding: 12, borderRadius: 8, borderLeftWidth: 4, borderLeftColor: '#FF3B30', marginBottom: 20 },
-  errorText: { color: '#D92D20', fontSize: 14, fontWeight: '500' },
-  listContent: { gap: 12 },
-  lineCard: { backgroundColor: '#FFF', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#E1E8EF', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  lineCardContent: { flex: 1 },
-  lineNumber: { fontSize: 20, fontWeight: 'bold', color: '#1A1C1E', marginBottom: 6 },
-  lineStatus: { fontSize: 13, color: '#666', fontWeight: '500' },
-  arrowIcon: { fontSize: 24, color: '#346699' },
-  directionCard: { backgroundColor: '#FFF', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#E1E8EF', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  directionText: { fontSize: 18, fontWeight: '600', color: '#1A1C1E' },
-  stopCard: { backgroundColor: '#FFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E1E8EF' },
-  stopCardContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  stopInfo: { flexDirection: 'row', gap: 12, flex: 1 },
-  stopSequence: { backgroundColor: '#346699', width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
-  stopSequenceText: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
-  stopDetails: { flex: 1, justifyContent: 'center' },
-  stopName: { fontSize: 16, fontWeight: '600', color: '#1A1C1E', marginBottom: 4 },
-  stopMeta: { fontSize: 12, color: '#666' },
-  timeSection: { alignItems: 'center', justifyContent: 'center', paddingLeft: 10 },
-  timeLabel: { fontSize: 10, color: '#666', textTransform: 'uppercase', fontWeight: 'bold', marginBottom: 2 },
-  timeBadge: { backgroundColor: '#E1EBF5', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8 },
-  timeText: { fontSize: 14, fontWeight: 'bold', color: '#346699' },
-  emptyContainer: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60 },
-  emptyText: { fontSize: 16, color: '#666', textAlign: 'center' },
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F7FA',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 40,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+    color: '#666',
+    fontSize: 16,
+  },
+  header: {
+    marginBottom: 24,
+    marginTop: 12,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1A1C1E',
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  backButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E1E8EF',
+  },
+  backButtonText: {
+    color: '#346699',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  errorContainer: {
+    backgroundColor: '#FFE5E5',
+    padding: 12,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF3B30',
+    marginBottom: 20,
+  },
+  errorText: {
+    color: '#D92D20',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  listContent: {
+    gap: 12,
+  },
+  lineCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#E1E8EF',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  lineCardContent: {
+    flex: 1,
+  },
+  lineNumber: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1A1C1E',
+    marginBottom: 6,
+  },
+  lineStatus: {
+    fontSize: 13,
+    color: '#666',
+    fontWeight: '500',
+  },
+  arrowIcon: {
+    fontSize: 24,
+    color: '#346699',
+  },
+  directionCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#E1E8EF',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  directionText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1A1C1E',
+  },
+  stopCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E1E8EF',
+    marginBottom: 12,
+  },
+  stopInfo: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  stopSequence: {
+    backgroundColor: '#346699',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stopSequenceText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  stopDetails: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  stopName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1A1C1E',
+    marginBottom: 4,
+  },
+  stopMeta: {
+    fontSize: 12,
+    color: '#666',
+  },
+  buyButton: {
+    backgroundColor: '#346699',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    marginTop: 20,
+  },
+  buyButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
 });
 
 export default RoutesScreen;
